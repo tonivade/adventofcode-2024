@@ -9,15 +9,14 @@ object Day2:
     input.linesIterator.map(_.split(" ")).map(_.map(_.toInt))
 
   def isSafe(report: Array[Int]): Boolean =
-    val diffs = report.sliding(2).map {
+    val diffs = report.sliding(2).map:
       case Array(a, b) => a - b
-    }.toList
+    .toList
     diffs.forall(Math.abs(_) <= 3) && (diffs.forall(_ > 0) || diffs.forall(_ < 0))
 
   def generateAll(report: Array[Int]): Array[Array[Int]] =
-    report.zipWithIndex.map {
+    report.zipWithIndex.map:
       case (_, i) => report.take(i) ++ report.drop(i + 1)
-    }
 
   def isSafeWithTolerance(report: Array[Int]): Boolean =
     isSafe(report) || generateAll(report).exists(isSafe)

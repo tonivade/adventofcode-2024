@@ -13,12 +13,12 @@ object Day3:
   def part2(input: String): Int = 
     val regex = """do(?:n't)?\(\)|mul\((\d+),(\d+)\)""".r
     regex.findAllMatchIn(input).foldLeft((true, 0)):
-      (state, m) =>
+      case ((enabled, result), m) =>
         m.group(0) match
-          case "do()" => (true, state._2)
-          case "don't()" => (false, state._2)
-          case _ if state._1 => (state._1, state._2 + (m.group(1).toInt * m.group(2).toInt))
-          case _ => state
+          case "do()" => (true, result)
+          case "don't()" => (false, result)
+          case _ if enabled => (enabled, result + (m.group(1).toInt * m.group(2).toInt))
+          case _ => (enabled, result)
     ._2
 
 @main def main: Unit =

@@ -43,8 +43,4 @@ class Day${next_day}Suite extends munit.FunSuite:
 
 EOF
 
-mkdir -p input
-
-curl "https://adventofcode.com/${year}/day/${next_day}/input" \
-  --cookie "session=$session_id" > "input/day${next_day}.txt"
-
+./download-day.sh

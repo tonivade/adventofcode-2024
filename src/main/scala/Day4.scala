@@ -15,11 +15,14 @@ object Day4:
     def leftUp = Position(x - 1, y + 1)
     def leftDown = Position(x - 1, y - 1)
 
-  def part1(input: String): Int = 
-    val matrix = input.linesIterator.zipWithIndex.flatMap:
+  def parse(input: String): Map[Position, Char] =
+    input.linesIterator.zipWithIndex.flatMap:
       (line, y) => line.zipWithIndex.map:
         (ch, x) => Position(x, y) -> ch
     .toMap
+
+  def part1(input: String): Int = 
+    val matrix = parse(input)
     
     val xs = matrix.filter:
       case (_, ch) => ch == 'X'
@@ -61,7 +64,56 @@ object Day4:
 
     lefts + rights + ups + downs + rightUps + rightDowns + leftUps + leftDowns
 
-  def part2(input: String): Int = ???
+  def part2(input: String): Int = 
+    val matrix = parse(input)
+    
+    val as = matrix.filter:
+      case (_, ch) => ch == 'A'
+    .keySet
+    val ms = matrix.filter:
+      case (_, ch) => ch == 'M'
+    .keySet
+    val ss = matrix.filter:
+      case (_, ch) => ch == 'S'
+    .keySet
+    
+    /* 
+        M.S
+        .A.
+        M.S
+     */
+    val r1 = as.filter:
+      a => ms.contains(a.leftUp) && ms.contains(a.leftDown) && ss.contains(a.rightUp) && ss.contains(a.rightDown)
+    .size
+
+    /* 
+        S.M
+        .A.
+        S.M
+     */
+    val r2 = as.filter:
+      a => ss.contains(a.leftUp) && ss.contains(a.leftDown) && ms.contains(a.rightUp) && ms.contains(a.rightDown)
+    .size
+
+    /* 
+        M.M
+        .A.
+        S.S
+     */
+    val r3 = as.filter:
+      a => ms.contains(a.leftUp) && ms.contains(a.rightUp) && ss.contains(a.leftDown) && ss.contains(a.rightDown)
+    .size
+
+    /* 
+        S.S
+        .A.
+        M.M
+     */
+    val r4 = as.filter:
+      a => ss.contains(a.leftUp) && ss.contains(a.rightUp) && ms.contains(a.leftDown) && ms.contains(a.rightDown)
+    .size
+
+    r1 + r2 + r3 + r4
 
 @main def main: Unit =
   val input = Source.fromFile("input/day4.txt").getLines().mkString("\n")

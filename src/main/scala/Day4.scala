@@ -17,8 +17,7 @@ object Day4:
     def leftUp = Position(x - 1, y + 1)
     def leftDown = Position(x - 1, y - 1)
 
-    def apply(move: Move): Position =
-      move(this)
+    def apply(move: Move) = move(this)
 
   def parse(input: String): Map[Position, Char] =
     input.linesIterator.zipWithIndex.flatMap:

@@ -12,10 +12,34 @@
         (list)
         (cons (list (first l) (first r)) (zip-list (rest l) (rest r))))))
 
+(def! zip-with-index (fn* (l i)
+    (if (empty? l)
+        l
+        (cons (list (first l) i) (zip-with-index (rest l) (+ i 1))))))
+
+(def! take (fn* (l i)
+    (if (empty? l)
+        l
+        (if (> i 0)
+            (cons (first l) (take (rest l) (- i 1)))
+            (list)))))
+
+(def! drop (fn* (l i)
+    (if (empty? l)
+        l
+        (if (> i 0)
+            (drop (rest l) (- i 1))
+            l))))
+
 (def! for-all (fn* (c l)
     (if (empty? l)
         true
         (and (c (first l)) (for-all c (rest l))))))
+
+(def! exists? (fn* (c l)
+    (if (empty? l)
+        false
+        (or (c (first l)) (exists? c (rest l))))))
 
 (def! filter (fn* (c l)
     (if (empty? l)
@@ -33,18 +57,27 @@
 
 (def! diff (fn* (l) (- (nth l 0) (nth l 1))))
 
-(def! list-diff (fn* (l) (map diff l)))
-
 (def! less-3 (fn* (i) (<= (abs i) 3)))
 (def! positive? (fn* (i) (> i 0)))
 (def! negative? (fn* (i) (< i 0)))
 
 (def! is-safe (fn* (l) 
-    (and (for-all less-3 l) 
-        (or (for-all positive? l) (for-all negative? l)))))
+    (let* (ld (map diff (sliding l)))
+        (and (for-all less-3 ld) 
+            (or (for-all positive? ld) (for-all negative? ld))))))
 
-(def! input (parse "input/day2-test.txt"))
-;(def! input (parse "input/day2.txt"))
+(def! remove-item (fn* (l i) (concat (take l i) (drop l (+ i 1)))))
+
+(def! generate-all (fn* (l) (map (fn* (r) (remove-item l (nth r 1))) (zip-with-index l 0))))
+
+(def! is-safe-with-tolerance (fn* (l)
+    (or (is-safe l) (exists? is-safe (generate-all l)))))
+
+;(def! input (parse "input/day2-test.txt"))
+(def! input (parse "input/day2.txt"))
 
 ;day2 part1
-(println (count (filter is-safe (map list-diff (map sliding input)))))
+(println (count (filter is-safe input)))
+
+;day2 part2
+(println (count (filter is-safe-with-tolerance input)))

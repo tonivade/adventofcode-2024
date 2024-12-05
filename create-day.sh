@@ -43,4 +43,4 @@ class Day${next_day}Suite extends munit.FunSuite:
 
 EOF
 
-./download-day.sh
+./download-day.sh $next_day

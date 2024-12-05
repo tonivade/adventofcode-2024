@@ -1,0 +1,69 @@
+(require str split)
+(require str split-lines)
+(require str to-number)
+
+(def! split-pair (fn* (s) (split s "\\s+")))
+
+(def! parse (fn* (file) 
+    (let* (input (slurp file)) (map split-pair (split-lines input)))))
+
+(def! get-left (fn* (l) (nth (nth l 0) 0)))
+
+(def! get-right (fn* (l) (nth (nth l 0) 1)))
+
+(def! list-left (fn* (l) 
+    (if (empty? l) 
+        l 
+        (cons (to-number (get-left l)) (list-left (rest l))))))
+
+(def! list-right (fn* (l) 
+    (if (empty? l) 
+        l 
+        (cons (to-number (get-right l)) (list-right (rest l))))))
+
+(def! insert-sort (fn* (item l) 
+    (if (empty? l) 
+        (cons item l) 
+        (if (< item (nth l 0)) 
+            (cons item l) 
+            (cons (nth l 0) (insert-sort item (rest l)))))))
+
+(def! sort-list (fn* (l) 
+    (if (empty? l) 
+        l 
+        (insert-sort (nth l 0) (sort-list (rest l))))))
+
+(def! pair-list (fn* (l r)
+    (if (empty? l) 
+        l 
+        (cons (list (nth l 0) (nth r 0)) (pair-list (rest l) (rest r))))))
+
+(def! diff (fn* (l) (- (nth l 0) (nth l 1))))
+
+(def! abs (fn* (n) (if (>= n 0) n (* n -1))))
+
+(def! sum-list (fn* (l) 
+    (if (empty? l) 
+        0 
+        (+ (nth l 0) (sum-list (rest l))))))
+
+(def! count-in-list (fn* (l item) 
+    (if (empty? l) 
+        0 
+        (if (= (nth l 0) item) 
+            (+ 1 (count-in-list (rest l) item)) 
+            (count-in-list (rest l) item)))))
+
+(def! input (parse "input/day1-test.txt"))
+;(def! input (parse "input/day1.txt"))
+
+; day1 part1
+(println (sum-list (map abs (map diff 
+    (pair-list 
+        (sort-list (list-left input)) 
+        (sort-list (list-right input)))))))
+
+; day1 part2
+(println (sum-list 
+    (let* (right (list-right input)) 
+        (map (fn* (item) (* item (count-in-list right item))) (list-left input)))))

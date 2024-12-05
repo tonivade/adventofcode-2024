@@ -33,10 +33,10 @@
         l 
         (insert-sort (nth l 0) (sort-list (rest l))))))
 
-(def! pair-list (fn* (l r)
+(def! zip-list (fn* (l r)
     (if (empty? l) 
         l 
-        (cons (list (nth l 0) (nth r 0)) (pair-list (rest l) (rest r))))))
+        (cons (list (nth l 0) (nth r 0)) (zip-list (rest l) (rest r))))))
 
 (def! diff (fn* (l) (- (nth l 0) (nth l 1))))
 
@@ -59,7 +59,7 @@
 
 ; day1 part1
 (println (sum-list (map abs (map diff 
-    (pair-list 
+    (zip-list 
         (sort-list (list-left input)) 
         (sort-list (list-right input)))))))
 

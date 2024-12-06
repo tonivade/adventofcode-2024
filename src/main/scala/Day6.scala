@@ -69,11 +69,10 @@ object Day6:
     val next = step(guard, matrix)
     if (next.outside(matrix))
       false
-    else if (visited.contains((guard.position, next.position)))
+    else if (visited.contains((guard.position -> next.position)))
       true
     else 
-      val nextPath = (guard.position, next.position)
-      searchLoop(next, matrix, visited + nextPath)
+      searchLoop(next, matrix, visited + (guard.position -> next.position))
 
   def part1(input: String): Int = 
     val matrix = parse(input)

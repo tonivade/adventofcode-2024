@@ -2,6 +2,7 @@ package day6
 
 import scala.io.Source
 import scala.annotation.tailrec
+import scala.collection.parallel.CollectionConverters._
 
 // https://adventofcode.com/2024/day/6
 object Day6:
@@ -33,6 +34,17 @@ object Day6:
         (ch, x) => Position(x, y) -> ch
     .toMap
 
+  def findGuard(matrix: Map[Position, Char]): Guard =
+    matrix.find:
+      case (_, ch) => ch == '^' || ch == '>' || ch == 'v' || ch == '<'
+    .map:
+      case (p, '^') => Guard(UP, p)
+      case (p, '>') => Guard(RIGHT, p)
+      case (p, 'v') => Guard(DOWN, p)
+      case (p, '<') => Guard(LEFT, p)
+    .get
+
+
   def collision(matrix: Map[Position, Char], next: Position): Boolean =
     matrix.get(next) match
       case Some(ch) => ch == '#'
@@ -45,30 +57,42 @@ object Day6:
       case Guard(DOWN, p) if collision(matrix, p.down) => guard.move(LEFT)
       case Guard(LEFT, p) if collision(matrix, p.left) => guard.move(UP)
       case Guard(d, _) => guard.move(d)
-    
+
   @tailrec
-  def loop(guard: Guard, matrix: Map[Position, Char]): Map[Position, Char] =
+  def search1(guard: Guard, matrix: Map[Position, Char]): Map[Position, Char] =
     var next = step(guard, matrix)
     if (next.outside(matrix))
       matrix + (guard.position -> 'X')
     else 
-      loop(next, matrix + (guard.position -> 'X'))
+      search1(next, matrix + (guard.position -> 'X'))
+
+  def loop(next: (Position, Position), visited: Set[(Position, Position)]): Boolean = 
+    visited.contains(next)
+
+  @tailrec
+  def search2(guard: Guard, matrix: Map[Position, Char], path: Set[(Position, Position)] = Set.empty): Boolean =
+    val next = step(guard, matrix)
+    if (next.outside(matrix))
+      false
+    else if (loop((guard.position, next.position), path))
+      true
+    else 
+      val nextPath = (guard.position, next.position)
+      search2(next, matrix, path + nextPath)
 
   def part1(input: String): Int = 
     val matrix = parse(input)
+    val guard = findGuard(matrix)
+    search1(guard, matrix).count((_, ch) => ch == 'X')
 
-    val guard = matrix.find:
-      case (_, ch) => ch == '^' || ch == '>' || ch == 'v' || ch == '<'
-    .map:
-      case (p, '^') => Guard(UP, p)
-      case (p, '>') => Guard(RIGHT, p)
-      case (p, 'v') => Guard(DOWN, p)
-      case (p, '<') => Guard(LEFT, p)
-    .get
+  def part2(input: String): Int =
+    val matrix = parse(input)
+    val guard = findGuard(matrix)
+    val visited = search1(guard, matrix).filter((_, ch) => ch == 'X').keySet
 
-    loop(guard, matrix).count((_, ch) => ch == 'X')
-
-  def part2(input: String): Int = ???
+    visited.par.filter:
+      p => search2(guard, matrix + (p -> '#'))
+    .size
 
 @main def main: Unit =
   val input = Source.fromFile("input/day6.txt").getLines().mkString("\n")

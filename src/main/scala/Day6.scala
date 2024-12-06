@@ -18,14 +18,14 @@ object Day6:
     def down = Position(x, y + 1)
 
   case class Guard(direction: Direction, position: Position):
-    def move(next: Direction): Guard = 
-      next match
-        case UP => Guard(next, position.up)
-        case RIGHT => Guard(next, position.right)
-        case DOWN => Guard(next, position.down)
-        case LEFT => Guard(next, position.left)
+    def move: Guard = 
+      direction match
+        case UP => Guard(direction, position.up)
+        case RIGHT => Guard(direction, position.right)
+        case DOWN => Guard(direction, position.down)
+        case LEFT => Guard(direction, position.left)
 
-    def change(next: Direction): Guard = Guard(next, position)
+    def turn(next: Direction): Guard = Guard(next, position)
     
     def outside(matrix: Map[Position, Char]): Boolean = !matrix.contains(position)
 
@@ -37,7 +37,7 @@ object Day6:
 
   def findGuard(matrix: Map[Position, Char]): Guard =
     matrix.find:
-      case (_, ch) => ch == '^' || ch == '>' || ch == 'v' || ch == '<'
+      case (_, ch) => ch == '^'
     .map:
       case (p, '^') => Guard(UP, p)
       case (p, '>') => Guard(RIGHT, p)
@@ -50,13 +50,14 @@ object Day6:
       case Some(ch) => ch == '#'
       case None => false
   
+  @tailrec
   def step(guard: Guard, matrix: Map[Position, Char]): Guard = 
     guard match
-      case Guard(UP, p) if (collision(matrix, p.up)) => step(guard.change(RIGHT), matrix)
-      case Guard(RIGHT, p) if collision(matrix, p.right) => step(guard.change(DOWN), matrix)
-      case Guard(DOWN, p) if collision(matrix, p.down) => step(guard.change(LEFT), matrix)
-      case Guard(LEFT, p) if collision(matrix, p.left) => step(guard.change(UP), matrix)
-      case Guard(d, _) => guard.move(d)
+      case Guard(UP, p) if (collision(matrix, p.up)) => step(guard.turn(RIGHT), matrix)
+      case Guard(RIGHT, p) if collision(matrix, p.right) => step(guard.turn(DOWN), matrix)
+      case Guard(DOWN, p) if collision(matrix, p.down) => step(guard.turn(LEFT), matrix)
+      case Guard(LEFT, p) if collision(matrix, p.left) => step(guard.turn(UP), matrix)
+      case _ => guard.move
 
   @tailrec
   def walk(guard: Guard, matrix: Map[Position, Char]): Map[Position, Char] =

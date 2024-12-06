@@ -2,7 +2,6 @@ package day6
 
 import scala.io.Source
 import scala.annotation.tailrec
-import scala.collection.parallel.CollectionConverters._
 
 // https://adventofcode.com/2024/day/6
 object Day6:
@@ -44,7 +43,6 @@ object Day6:
       case (p, '<') => Guard(LEFT, p)
     .get
 
-
   def collision(matrix: Map[Position, Char], next: Position): Boolean =
     matrix.get(next) match
       case Some(ch) => ch == '#'
@@ -59,39 +57,36 @@ object Day6:
       case Guard(d, _) => guard.move(d)
 
   @tailrec
-  def search1(guard: Guard, matrix: Map[Position, Char]): Map[Position, Char] =
+  def walk(guard: Guard, matrix: Map[Position, Char]): Map[Position, Char] =
     var next = step(guard, matrix)
     if (next.outside(matrix))
       matrix + (guard.position -> 'X')
     else 
-      search1(next, matrix + (guard.position -> 'X'))
-
-  def loop(next: (Position, Position), visited: Set[(Position, Position)]): Boolean = 
-    visited.contains(next)
+      walk(next, matrix + (guard.position -> 'X'))
 
   @tailrec
-  def search2(guard: Guard, matrix: Map[Position, Char], path: Set[(Position, Position)] = Set.empty): Boolean =
+  def searchLoop(guard: Guard, matrix: Map[Position, Char], visited: Set[(Position, Position)] = Set.empty): Boolean =
     val next = step(guard, matrix)
     if (next.outside(matrix))
       false
-    else if (loop((guard.position, next.position), path))
+    else if (visited.contains((guard.position, next.position)))
       true
     else 
       val nextPath = (guard.position, next.position)
-      search2(next, matrix, path + nextPath)
+      searchLoop(next, matrix, visited + nextPath)
 
   def part1(input: String): Int = 
     val matrix = parse(input)
     val guard = findGuard(matrix)
-    search1(guard, matrix).count((_, ch) => ch == 'X')
+    walk(guard, matrix).count((_, ch) => ch == 'X')
 
   def part2(input: String): Int =
     val matrix = parse(input)
     val guard = findGuard(matrix)
-    val visited = search1(guard, matrix).filter((_, ch) => ch == 'X').keySet
+    val visited = walk(guard, matrix).filter((_, ch) => ch == 'X').keySet
 
-    visited.par.filter:
-      p => search2(guard, matrix + (p -> '#'))
+    visited.filter:
+      p => searchLoop(guard, matrix + (p -> '#'))
     .size
 
 @main def main: Unit =

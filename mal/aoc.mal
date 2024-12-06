@@ -1,0 +1,61 @@
+;; utility methods
+
+(def! first (fn* (l) (nth l 0)))
+(def! and (fn* (a b) (if (false? a) false b)))
+(def! or (fn* (a b) (if (true? a) true b)))
+(def! abs (fn* (n) (if (>= n 0) n (* n -1))))
+(def! incr (fn* (n) (+ n 1)))
+(def! decr (fn* (n) (- n 1)))
+
+(def! zip-list (fn* (l r)
+    (if (or (empty? l) (empty? r))
+        (list)
+        (cons (list (first l) (first r)) (zip-list (rest l) (rest r))))))
+
+(def! zip-with-index (fn* (l i)
+    (if (empty? l)
+        l
+        (cons (list (first l) i) (zip-with-index (rest l) (incr i))))))
+
+(def! take (fn* (l i)
+    (if (empty? l)
+        l
+        (if (> i 0)
+            (cons (first l) (take (rest l) (decr i)))
+            (list)))))
+
+(def! drop (fn* (l i)
+    (if (empty? l)
+        l
+        (if (> i 0)
+            (drop (rest l) (decr i))
+            l))))
+
+(def! for-all? (fn* (c l)
+    (if (empty? l)
+        true
+        (and (c (first l)) (for-all? c (rest l))))))
+
+(def! exists? (fn* (c l)
+    (if (empty? l)
+        false
+        (or (c (first l)) (exists? c (rest l))))))
+
+(def! filter (fn* (c l)
+    (if (empty? l)
+        l
+        (if (c (first l))
+            (cons (first l) (filter c (rest l)))
+            (filter c (rest l))))))
+
+(def! insert-sort (fn* (item l) 
+    (if (empty? l) 
+        (cons item l) 
+        (if (< item (first l)) 
+            (cons item l) 
+            (cons (first l) (insert-sort item (rest l)))))))
+
+(def! sort-list (fn* (l) 
+    (if (empty? l) 
+        l 
+        (insert-sort (nth l 0) (sort-list (rest l))))))

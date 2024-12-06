@@ -24,6 +24,8 @@ object Day6:
         case RIGHT => Guard(next, position.right)
         case DOWN => Guard(next, position.down)
         case LEFT => Guard(next, position.left)
+
+    def change(next: Direction): Guard = Guard(next, position)
     
     def outside(matrix: Map[Position, Char]): Boolean = !matrix.contains(position)
 
@@ -50,10 +52,10 @@ object Day6:
   
   def step(guard: Guard, matrix: Map[Position, Char]): Guard = 
     guard match
-      case Guard(UP, p) if (collision(matrix, p.up)) => guard.move(RIGHT)
-      case Guard(RIGHT, p) if collision(matrix, p.right) => guard.move(DOWN)
-      case Guard(DOWN, p) if collision(matrix, p.down) => guard.move(LEFT)
-      case Guard(LEFT, p) if collision(matrix, p.left) => guard.move(UP)
+      case Guard(UP, p) if (collision(matrix, p.up)) => step(guard.change(RIGHT), matrix)
+      case Guard(RIGHT, p) if collision(matrix, p.right) => step(guard.change(DOWN), matrix)
+      case Guard(DOWN, p) if collision(matrix, p.down) => step(guard.change(LEFT), matrix)
+      case Guard(LEFT, p) if collision(matrix, p.left) => step(guard.change(UP), matrix)
       case Guard(d, _) => guard.move(d)
 
   @tailrec
@@ -82,7 +84,7 @@ object Day6:
   def part2(input: String): Int =
     val matrix = parse(input)
     val guard = findGuard(matrix)
-    val visited = walk(guard, matrix).filter((_, ch) => ch == 'X').keySet
+    val visited = walk(guard, matrix).filter((_, ch) => ch == 'X').keySet - guard.position
 
     visited.filter:
       p => searchLoop(guard, matrix + (p -> '#'))

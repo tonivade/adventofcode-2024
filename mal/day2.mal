@@ -4,29 +4,29 @@
 
 (load-file "mal/aoc.mal")
 
-(def! split-numbers (fn* (s) (map to-number (split s "\\s"))))
+(def! split-numbers (fn* [s] (map to-number (split s "\\s"))))
 
-(def! parse (fn* (file) 
+(def! parse (fn* [file] 
     (let* (input (slurp file)) (map split-numbers (split-lines input)))))
 
-(def! sliding (fn* (l) (zip-list l (rest l))))
+(def! sliding (fn* [l] (zip-list l (rest l))))
 
-(def! diff (fn* (l) (- (nth l 0) (nth l 1))))
+(def! diff (fn* [l] (- (nth l 0) (nth l 1))))
 
-(def! less-3 (fn* (i) (<= (abs i) 3)))
-(def! positive? (fn* (i) (> i 0)))
-(def! negative? (fn* (i) (< i 0)))
+(def! less-3 (fn* [i] (<= (abs i) 3)))
+(def! positive? (fn* [i] (> i 0)))
+(def! negative? (fn* [i] (< i 0)))
 
-(def! is-safe? (fn* (l) 
+(def! is-safe? (fn* [l] 
     (let* (ld (map diff (sliding l)))
         (and (for-all? less-3 ld) 
             (or (for-all? positive? ld) (for-all? negative? ld))))))
 
-(def! remove-item (fn* (l i) (concat (take l i) (drop l (incr i)))))
+(def! remove-item (fn* [l i] (concat (take l i) (drop l (incr i)))))
 
-(def! generate-all (fn* (l) (map (fn* (r) (remove-item l (nth r 1))) (zip-with-index l 0))))
+(def! generate-all (fn* [l] (map (fn* [r] (remove-item l (second r))) (zip-with-index l 0))))
 
-(def! is-safe-with-tolerance? (fn* (l)
+(def! is-safe-with-tolerance? (fn* [l]
     (or (is-safe? l) (exists? is-safe? (generate-all l)))))
 
 ;(def! input (parse "input/day2-test.txt"))

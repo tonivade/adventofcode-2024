@@ -25,11 +25,6 @@
 
 (def! diff (fn* [l] (- (first l) (second l))))
 
-(def! sum-list (fn* [l] 
-    (if (empty? l) 
-        0 
-        (+ (first l) (sum-list (rest l))))))
-
 (def! count-in-list (fn* [l item] 
     (if (empty? l) 
         0 
@@ -41,12 +36,12 @@
 ;(def! input (parse "input/day1.txt"))
 
 ; day1 part1
-(println (sum-list (map abs (map diff 
+(println (reduce 0 + (map abs (map diff 
     (zip-list 
         (sort-list (list-left input)) 
         (sort-list (list-right input)))))))
 
 ; day1 part2
-(println (sum-list 
+(println (reduce 0 + 
     (let* (right (list-right input)) 
         (map (fn* [item] (* item (count-in-list right item))) (list-left input)))))

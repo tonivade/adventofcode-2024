@@ -58,7 +58,12 @@
         l 
         (insert-sort (first l) (sort-list (rest l))))))
 
-(def! quick-sort (fn* [l]
-    (if (<= l (count l))
-        l
-        (let* (pivot (/ (count l) 2)) ))))
+(def! reduce (fn* [z f l] 
+    (if (empty? l) 
+        z 
+        (f (first l) (reduce z f (rest l))))))
+
+(def! fold (fn* [z f l] 
+    (if (empty? l) 
+        z 
+        (fold (f z (first l)) f (rest l)))))

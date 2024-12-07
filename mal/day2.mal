@@ -29,8 +29,8 @@
 (def! is-safe-with-tolerance? (fn* (l)
     (or (is-safe? l) (exists? is-safe? (generate-all l)))))
 
-(def! input (parse "input/day2-test.txt"))
-;(def! input (parse "input/day2.txt"))
+;(def! input (parse "input/day2-test.txt"))
+(def! input (parse "input/day2.txt"))
 
 ;day2 part1
 (println (count (filter is-safe? input)))

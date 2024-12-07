@@ -1,8 +1,8 @@
 ;; utility methods
 
-(def! first (fn* (l) (nth l 0)))
-(def! and (fn* (a b) (if (false? a) false b)))
-(def! or (fn* (a b) (if (true? a) true b)))
+(load-file "mal/logic.mal")
+
+(def! second (fn* (l) (nth l 1)))
 (def! abs (fn* (n) (if (>= n 0) n (* n -1))))
 (def! incr (fn* (n) (+ n 1)))
 (def! decr (fn* (n) (- n 1)))
@@ -49,13 +49,11 @@
             (filter c (rest l))))))
 
 (def! insert-sort (fn* (item l) 
-    (if (empty? l) 
+    (if (or (empty? l) (< item (first l)))
         (cons item l) 
-        (if (< item (first l)) 
-            (cons item l) 
-            (cons (first l) (insert-sort item (rest l)))))))
+        (cons (first l) (insert-sort item (rest l))))))
 
 (def! sort-list (fn* (l) 
     (if (empty? l) 
         l 
-        (insert-sort (nth l 0) (sort-list (rest l))))))
+        (insert-sort (first l) (sort-list (rest l))))))

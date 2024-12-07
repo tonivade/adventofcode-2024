@@ -9,9 +9,9 @@
 (def! parse (fn* (file) 
     (let* (input (slurp file)) (map split-pair (split-lines input)))))
 
-(def! get-left (fn* (l) (nth (first l) 0)))
+(def! get-left (fn* (l) (first (first l))))
 
-(def! get-right (fn* (l) (nth (first l) 1)))
+(def! get-right (fn* (l) (second (first l))))
 
 (def! list-left (fn* (l) 
     (if (empty? l) 
@@ -23,22 +23,22 @@
         l 
         (cons (to-number (get-right l)) (list-right (rest l))))))
 
-(def! diff (fn* (l) (- (nth l 0) (nth l 1))))
+(def! diff (fn* (l) (- (first l) (second l))))
 
 (def! sum-list (fn* (l) 
     (if (empty? l) 
         0 
-        (+ (nth l 0) (sum-list (rest l))))))
+        (+ (first l) (sum-list (rest l))))))
 
 (def! count-in-list (fn* (l item) 
     (if (empty? l) 
         0 
-        (if (= (nth l 0) item) 
+        (if (= (first l) item) 
             (+ 1 (count-in-list (rest l) item)) 
             (count-in-list (rest l) item)))))
 
-(def! input (parse "input/day1-test.txt"))
-;(def! input (parse "input/day1.txt"))
+;(def! input (parse "input/day1-test.txt"))
+(def! input (parse "input/day1.txt"))
 
 ; day1 part1
 (println (sum-list (map abs (map diff 

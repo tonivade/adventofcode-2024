@@ -6,11 +6,11 @@ import scala.annotation.tailrec
 // https://adventofcode.com/2024/day/7
 object Day7:
 
-  case class Equation(result: Long, operands: List[Long]):
-    def solve: Boolean = calculate(List(1), operands).contains(result)
+  case class Equation(target: Long, operands: List[Long]):
+    def solve: Boolean = calculate(Set(operands.head), operands.tail).contains(target)
 
   @tailrec
-  def calculate(result: List[Long], operands: List[Long]): List[Long] =
+  def calculate(result: Set[Long], operands: List[Long]): Set[Long] =
     operands match
       case head :: tail => calculate(result.flatMap(a => List(a + head, a * head)), tail)
       case Nil => result
@@ -19,7 +19,7 @@ object Day7:
     val result = input.linesIterator.map(_.split(": ")).map:
       case Array(number, operands) => 
         Equation(number.toLong, operands.split(" ").map(_.toLong).toList)
-    result.filter(_.solve).map(_.result).sum
+    result.filter(_.solve).map(_.target).sum
 
   def part2(input: String): Int = ???
 

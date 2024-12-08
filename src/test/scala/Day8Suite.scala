@@ -18,16 +18,14 @@ class Day8Suite extends munit.FunSuite:
                 |............""".stripMargin
 
   test("antinodes 1"):
-    assertEquals(Position(9, 1).antinodes(Position(6, 2)), List(Position(12, 0), Position(3, 3)))
-    assertEquals(Position(9, 1).antinodes(Position(6, 1)), List(Position(12, 1), Position(3, 1)))
-    assertEquals(Position(6, 1).antinodes(Position(6, 2)), List(Position(6, 0), Position(6, 3)))
+    assertEquals(Position(9, 1).antinodes1(Position(6, 2)), List(Position(12, 0), Position(3, 3)))
+    assertEquals(Position(9, 1).antinodes1(Position(6, 1)), List(Position(12, 1), Position(3, 1)))
+    assertEquals(Position(6, 1).antinodes1(Position(6, 2)), List(Position(6, 0), Position(6, 3)))
+    assertEquals(Position(9, 2).antinodes1(Position(6, 1)), List(Position(12, 3), Position(3, 0)))
+    assertEquals(Position(6, 1).antinodes1(Position(9, 1)), List(Position(3, 1), Position(12, 1)))
+    assertEquals(Position(6, 2).antinodes1(Position(6, 1)), List(Position(6, 3), Position(6, 0)))
 
-  test("antinodes 2"):
-    assertEquals(Position(9, 2).antinodes(Position(6, 1)), List(Position(12, 3), Position(3, 0)))
-    assertEquals(Position(6, 1).antinodes(Position(9, 1)), List(Position(3, 1), Position(12, 1)))
-    assertEquals(Position(6, 2).antinodes(Position(6, 1)), List(Position(6, 3), Position(6, 0)))
-
-  test("Day8 part1 a") {
+  test("Day8 part1 example 1"):
     assertEquals(part1("""..........
                          |..........
                          |..........
@@ -38,9 +36,8 @@ class Day8Suite extends munit.FunSuite:
                          |..........
                          |..........
                          |..........""".stripMargin), 2)
-  }
 
-  test("Day8 part1 b") {
+  test("Day8 part1 example 2"):
     assertEquals(part1("""..........
                          |..........
                          |..........
@@ -51,13 +48,27 @@ class Day8Suite extends munit.FunSuite:
                          |..........
                          |..........
                          |..........""".stripMargin), 4)
-  }
 
-  test("Day8 part1") {
+  test("Day8 part1"):
     assertEquals(part1(input), 14)
-  }
 
-  test("Day8 part2") {
-    assertEquals(part2(input), 1)
-  }
+  test("antinodes 2"):
+    assertEquals(Position(1, 2).antinodes2(Position(3, 1), Bounds(9, 9)), List(Position(5, 0)))
+    assertEquals(Position(0, 0).antinodes2(Position(3, 1), Bounds(9, 9)), List(Position(6, 2), Position(9, 3)))
+    assertEquals(Position(0, 0).antinodes2(Position(1, 2), Bounds(9, 9)), List(Position(2, 4), Position(3, 6), Position(4, 8)))
+
+  test("Day8 part2 example"):
+    assertEquals(part2("""T.........
+                         |...T......
+                         |.T........
+                         |..........
+                         |..........
+                         |..........
+                         |..........
+                         |..........
+                         |..........
+                         |..........""".stripMargin), 9)
+
+  test("Day8 part2"):
+    assertEquals(part2(input), 34)
 

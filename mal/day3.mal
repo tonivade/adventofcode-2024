@@ -6,7 +6,7 @@
 ;(def! input (slurp "input/day3-test.txt"))
 (def! input (slurp "input/day3.txt"))
 
-(def! mul (fn* (match) (* (to-number (nth match 1)) (to-number (nth match 2)))))
+(def! mul (fn* [match] (* (to-number (nth match 1)) (to-number (nth match 2)))))
 
 ;day3 part1
 (println (reduce 0 + (map mul (find-matches input "mul\\((\\d+),(\\d+)\\)"))))

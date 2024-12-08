@@ -6,16 +6,16 @@
 ;(def! input (slurp "input/day3-test.txt"))
 (def! input (slurp "input/day3.txt"))
 
+(def! mul (fn* (match) (* (to-number (nth match 1)) (to-number (nth match 2)))))
+
 ;day3 part1
-(println (reduce 0 + (map 
-    (fn* [result] (* (to-number (nth result 1)) (to-number (nth result 2)))) 
-    (find-matches input "mul\\((\\d+),(\\d+)\\)"))))
+(println (reduce 0 + (map mul (find-matches input "mul\\((\\d+),(\\d+)\\)"))))
 
 ;day3 part2
 (println (second (fold (list true 0)
-    (fn* [state item] (cond
-        (= (first item) "do()") (list true (second state))
-        (= (first item) "don't()") (list false (second state))
-        (first state) (list true (+ (second state) (* (to-number (nth item 1)) (to-number (nth item 2)))))
+    (fn* [state match] (cond
+        (= (first match) "do()") (list true (second state))
+        (= (first match) "don't()") (list false (second state))
+        (first state) (list true (+ (second state) (mul match)))
         true state))
     (find-matches input "do(?:n't)?\\(\\)|mul\\((\\d+),(\\d+)\\)"))))

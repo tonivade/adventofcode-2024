@@ -31,7 +31,7 @@
         (fn* [row-index] (find-letter-in-row letter row-index))
         (zip-with-index input 0)))))
 
-(def! search (fn* [input move] 
+(def! search1 (fn* [input move] 
     (let* (xs (find-letter "X" input) ms (find-letter "M" input) as (find-letter "A" input) ss (find-letter "S" input)) 
         (filter (fn* [x] 
             (and 
@@ -39,16 +39,34 @@
                 (exists? (fn* [a] (= a (move (move x)))) as)
                 (exists? (fn* [s] (= s (move (move (move x))))) ss))) xs))))
 
-;(def! input (parse "input/day4-test.txt"))
-(def! input (parse "input/day4.txt"))
+(def! search2 (fn* [input m1 m2 m3 m4] 
+    (let* (ms (find-letter "M" input) as (find-letter "A" input) ss (find-letter "S" input)) 
+        (filter (fn* [a] 
+            (and 
+                (exists? (fn* [m] (= m (m1 a))) ms) 
+                (exists? (fn* [m] (= m (m2 a))) ms) 
+                (exists? (fn* [s] (= s (m3 a))) ss)
+                (exists? (fn* [s] (= s (m4 a))) ss))) as))))
 
+(def! input (parse "input/day4-test.txt"))
+;(def! input (parse "input/day4.txt"))
+
+;day4 part1
 (println (count (concat 
-    (search input right)
-    (search input left)
-    (search input up)
-    (search input down)
-    (search input right-up)
-    (search input right-down)
-    (search input left-up)
-    (search input left-down)
+    (search1 input right)
+    (search1 input left)
+    (search1 input up)
+    (search1 input down)
+    (search1 input right-up)
+    (search1 input right-down)
+    (search1 input left-up)
+    (search1 input left-down)
+)))
+
+;day4 part2
+(println (count (concat 
+    (search2 input left-up left-down right-up right-down)
+    (search2 input right-up right-down left-up left-down)
+    (search2 input left-up right-up left-down right-down)
+    (search2 input left-down right-down left-up right-up)
 )))

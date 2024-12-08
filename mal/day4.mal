@@ -1,0 +1,54 @@
+(require str split)
+(require str split-lines)
+(require str to-chars)
+
+(load-file "mal/aoc.mal")
+
+(def! parse (fn* [file] 
+    (let* (input (slurp file)) (map to-chars (split-lines input)))))
+
+(def! right (fn* [point] (list (incr (first point)) (second point))))
+(def! left (fn* [point] (list (decr (first point)) (second point))))
+(def! up (fn* [point] (list (first point) (incr (second point)))))
+(def! down (fn* [point] (list (first point) (decr (second point)))))
+
+(def! right-up (fn* [point] (list (incr (first point)) (incr (second point)))))
+(def! right-down (fn* [point] (list (incr (first point)) (decr (second point)))))
+(def! left-up (fn* [point] (list (decr (first point)) (incr (second point)))))
+(def! left-down (fn* [point] (list (decr (first point)) (decr (second point)))))
+
+(def! find-letter-in-row (fn* [letter row-index]
+    (map second
+        (filter 
+            (fn* [item] (= (first item) letter))
+            (map 
+                (fn* [item] 
+                    (cons (first item) (list (list (second item) (second row-index)))))
+                    (zip-with-index (first row-index) 0))))))
+
+(def! find-letter (fn* [letter input] 
+    (flatten (map 
+        (fn* [row-index] (find-letter-in-row letter row-index))
+        (zip-with-index input 0)))))
+
+(def! search (fn* [input move] 
+    (let* (xs (find-letter "X" input) ms (find-letter "M" input) as (find-letter "A" input) ss (find-letter "S" input)) 
+        (filter (fn* [x] 
+            (and 
+                (exists? (fn* [m] (= m (move x))) ms) 
+                (exists? (fn* [a] (= a (move (move x)))) as)
+                (exists? (fn* [s] (= s (move (move (move x))))) ss))) xs))))
+
+;(def! input (parse "input/day4-test.txt"))
+(def! input (parse "input/day4.txt"))
+
+(println (count (concat 
+    (search input right)
+    (search input left)
+    (search input up)
+    (search input down)
+    (search input right-up)
+    (search input right-down)
+    (search input left-up)
+    (search input left-down)
+)))

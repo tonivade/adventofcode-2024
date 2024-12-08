@@ -67,3 +67,5 @@
     (if (empty? l) 
         z 
         (fold (f z (first l)) f (rest l)))))
+
+(def! flatten (fn* [l] (reduce (list) concat l)))

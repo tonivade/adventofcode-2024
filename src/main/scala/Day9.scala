@@ -11,9 +11,6 @@ object Day9:
   enum Sector:
     case File(id: Long)
     case Free
-    def isFree: Boolean = this match
-      case Free => true
-      case _ => false
     def repeat(times: Int): List[Sector] = 
       if (times == 0)
         Nil
@@ -33,8 +30,8 @@ object Day9:
 
   @tailrec
   def compact1(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = 
-    val freePosition = input.iterator.indexWhere(_.isFree, start)
-    val lastPosition = input.reverseIterator.indexWhere(!_.isFree, end)
+    val freePosition = input.iterator.indexWhere(_ == Free, start)
+    val lastPosition = input.reverseIterator.indexWhere(_ != Free, end)
 
     val position = input.size - lastPosition - 1
     if (freePosition > position)

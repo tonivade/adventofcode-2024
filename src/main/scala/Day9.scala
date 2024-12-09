@@ -31,26 +31,27 @@ object Day9:
     ._2
 
   @tailrec
-  def compact(input: List[Sector]): List[Sector] = 
-    val freePosition = input.zipWithIndex.find(_._1.isFree).map(_._2).get
-    val lastSector = input.zipWithIndex.findLast(!_._1.isFree).map(_._2).get
+  def compact(input: List[Sector], start: Int = 0, end: Int = 0): List[Sector] = 
+    val (_, freePosition) = input.iterator.zipWithIndex.drop(start).find(_._1.isFree).get
+    val (lastSector, lastPosition) = input.reverseIterator.zipWithIndex.drop(end).find(!_._1.isFree).get
 
-    if (freePosition > lastSector)
+    if (freePosition > (input.size - lastPosition - 1))
       input
     else
       val buffer = input.toBuffer
-      buffer(freePosition) = buffer(lastSector)
-      buffer(lastSector) = Free
-      compact(buffer.toList)
+      buffer(freePosition) = lastSector
+      buffer(input.size - lastPosition - 1) = Free
+      compact(buffer.toList, freePosition, lastPosition)
 
   def checksum(input: List[Sector]): Long = 
-    input.zipWithIndex.map:
-      case (File(id), i) => id * i
-      case _ => 0
-    .sum
+    input.zipWithIndex.foldLeft(0L):
+      case (sum, (File(id), i)) => sum + (id * i)
+      case (sum, _) => sum
 
   def part1(input: String): Long = 
-    input pipe expand pipe compact pipe checksum
+    val expanded = expand(input)
+    val compacted = compact(expanded)
+    checksum(compacted)
 
   def part2(input: String): Int = ???
 

@@ -12,7 +12,6 @@ class Day9Suite extends munit.FunSuite:
       case _  => Sector.Free
     .toList
     
-
   test("Day9 part1 expand example 1"):
     assertEquals(expand(input), parse("00...111...2...333.44.5555.6666.777.888899"))
 

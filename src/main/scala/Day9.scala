@@ -3,6 +3,7 @@ package day9
 import scala.io.Source
 import scala.util.chaining._
 import scala.annotation.tailrec
+import scala.collection.mutable.Buffer
 
 // https://adventofcode.com/2024/day/9
 object Day9:
@@ -21,8 +22,8 @@ object Day9:
 
   import Sector._
 
-  def expand(input: String): List[Sector] = 
-    input.zipWithIndex.foldLeft(0L, List.empty[Sector]):
+  def expand(input: String): Buffer[Sector] = 
+    input.zipWithIndex.foldLeft(0L, Buffer.empty[Sector]):
       case ((fileId, result), (ch, i)) =>
         if (i % 2 == 0)
           (fileId + 1, result ++ File(fileId).repeat(ch.toInt - 48))
@@ -31,29 +32,34 @@ object Day9:
     ._2
 
   @tailrec
-  def compact(input: List[Sector], start: Int = 0, end: Int = 0): List[Sector] = 
+  def compact1(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = 
     val (_, freePosition) = input.iterator.zipWithIndex.drop(start).find(_._1.isFree).get
     val (lastSector, lastPosition) = input.reverseIterator.zipWithIndex.drop(end).find(!_._1.isFree).get
 
     if (freePosition > (input.size - lastPosition - 1))
       input
     else
-      val buffer = input.toBuffer
+      val buffer = input
       buffer(freePosition) = lastSector
       buffer(input.size - lastPosition - 1) = Free
-      compact(buffer.toList, freePosition, lastPosition)
+      compact1(buffer, freePosition, lastPosition)
+  
+  def compact2(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = ???
 
-  def checksum(input: List[Sector]): Long = 
+  def checksum(input: Iterable[Sector]): Long = 
     input.zipWithIndex.foldLeft(0L):
       case (sum, (File(id), i)) => sum + (id * i)
       case (sum, _) => sum
 
   def part1(input: String): Long = 
     val expanded = expand(input)
-    val compacted = compact(expanded)
+    val compacted = compact1(expanded)
     checksum(compacted)
 
-  def part2(input: String): Int = ???
+  def part2(input: String): Long = 
+    val expanded = expand(input)
+    val compacted = compact2(expanded)
+    checksum(compacted)
 
 @main def main: Unit =
   val input = Source.fromFile("input/day9.txt").getLines().mkString("\n")

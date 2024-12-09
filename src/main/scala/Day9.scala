@@ -33,16 +33,16 @@ object Day9:
 
   @tailrec
   def compact1(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = 
-    val (_, freePosition) = input.iterator.zipWithIndex.drop(start).find(_._1.isFree).get
-    val (lastSector, lastPosition) = input.reverseIterator.zipWithIndex.drop(end).find(!_._1.isFree).get
+    val freePosition = input.iterator.indexWhere(_.isFree, start)
+    val lastPosition = input.reverseIterator.indexWhere(!_.isFree, end)
 
-    if (freePosition > (input.size - lastPosition - 1))
+    val position = input.size - lastPosition - 1
+    if (freePosition > position)
       input
     else
-      val buffer = input
-      buffer(freePosition) = lastSector
-      buffer(input.size - lastPosition - 1) = Free
-      compact1(buffer, freePosition, lastPosition)
+      input(freePosition) = input(position)
+      input(position) = Free
+      compact1(input, freePosition, lastPosition)
   
   def compact2(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = ???
 

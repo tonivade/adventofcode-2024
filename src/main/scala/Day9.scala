@@ -31,17 +31,31 @@ object Day9:
   @tailrec
   def compact1(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = 
     val freePosition = input.iterator.indexWhere(_ == Free, start)
-    val lastPosition = input.reverseIterator.indexWhere(_ != Free, end)
+    val reversePosition = input.reverseIterator.indexWhere(_ != Free, end)
 
-    val position = input.size - lastPosition - 1
-    if (freePosition > position)
+    val filePosition = input.size - reversePosition - 1
+    if (freePosition > filePosition)
       input
     else
-      input(freePosition) = input(position)
-      input(position) = Free
-      compact1(input, freePosition, lastPosition)
+      input(freePosition) = input(filePosition)
+      input(filePosition) = Free
+      compact1(input, freePosition, reversePosition)
   
-  def compact2(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = ???
+  @tailrec
+  def compact2(input: Buffer[Sector], end: Int = 0): Buffer[Sector] = 
+    if (end >= input.size)
+      input
+    else
+      val reversePosition = input.reverseIterator.indexWhere(_.isInstanceOf[File], end)
+      val filePosition = input.size - reversePosition - 1
+      val fileSize = input.reverseIterator.dropWhile(_ != input(filePosition)).takeWhile(_ == input(filePosition)).size
+      val freePosition = input.indexOfSlice(Free.repeat(fileSize))
+
+      if (freePosition > -1 && freePosition < filePosition)
+        for (i <- 0 until fileSize) input(freePosition + i) = input(filePosition - i)
+        for (i <- 0 until fileSize) input(filePosition - i) = Free
+      
+      compact2(input, reversePosition + fileSize)
 
   def checksum(input: Iterable[Sector]): Long = 
     input.zipWithIndex.foldLeft(0L):

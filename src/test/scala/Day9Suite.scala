@@ -31,12 +31,12 @@ class Day9Suite extends munit.FunSuite:
   test("Day9 part1"):
     assertEquals(part1(input), 1928L)
 
-  test("Day9 part2 compact example 1".ignore):
-    assertEquals(compact1(parse("00...111...2...333.44.5555.6666.777.888899")), parse("00992111777.44.333....5555.6666.....8888.."))
+  test("Day9 part2 compact example 1"):
+    assertEquals(compact2(parse("00...111...2...333.44.5555.6666.777.888899")), parse("00992111777.44.333....5555.6666.....8888.."))
 
   test("Day9 part2 checksum example 1"):
     assertEquals(checksum(parse("00992111777.44.333....5555.6666.....8888..")), 2858L)
 
-  test("Day9 part2".ignore):
+  test("Day9 part2"):
     assertEquals(part2(input), 2858L)
 

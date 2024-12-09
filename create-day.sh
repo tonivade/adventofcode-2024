@@ -33,13 +33,11 @@ class Day${next_day}Suite extends munit.FunSuite:
 
   val input = """""".stripMargin
 
-  test("Day${next_day} part1") {
+  test("Day${next_day} part1"):
     assertEquals(part1(input), 1)
-  }
 
-  test("Day${next_day} part2") {
+  test("Day${next_day} part2"):
     assertEquals(part2(input), 1)
-  }
 
 EOF
 

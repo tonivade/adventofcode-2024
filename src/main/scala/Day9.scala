@@ -46,14 +46,20 @@ object Day9:
     if (end >= input.size)
       input
     else
-      val reversePosition = input.reverseIterator.indexWhere(_.isInstanceOf[File], end)
+      // find first non free sector starting the from last file position
+      val reversePosition = input.reverseIterator.indexWhere(_ != Free, end)
       val filePosition = input.size - reversePosition - 1
-      val fileSize = input.reverseIterator.dropWhile(_ != input(filePosition)).takeWhile(_ == input(filePosition)).size
-      val freePosition = input.indexOfSlice(Free.repeat(fileSize))
+      // calculate the size of the file
+      val fileSize = input.dropRight(reversePosition).reverseIterator.takeWhile(_ == input(filePosition)).size
+      // find first free slot to put the file
+      val freePosition = input.dropRight(reversePosition).indexOfSlice(Free.repeat(fileSize))
+
+      println(input(filePosition))
 
       if (freePosition > -1 && freePosition < filePosition)
-        for (i <- 0 until fileSize) input(freePosition + i) = input(filePosition - i)
-        for (i <- 0 until fileSize) input(filePosition - i) = Free
+        for (i <- 0 until fileSize) 
+          input(freePosition + i) = input(filePosition - i)
+          input(filePosition - i) = Free
       
       compact2(input, reversePosition + fileSize)
 

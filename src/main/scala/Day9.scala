@@ -1,7 +1,6 @@
 package day9
 
 import scala.io.Source
-import scala.util.chaining._
 import scala.annotation.tailrec
 import scala.collection.mutable.Buffer
 

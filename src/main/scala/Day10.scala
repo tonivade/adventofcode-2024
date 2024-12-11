@@ -6,7 +6,6 @@ import scala.annotation.tailrec
 // https://adventofcode.com/2024/day/10
 object Day10:
 
-
   case class Position(x: Int, y: Int):
     def up = Position(x, y + 1)
     def down = Position(x, y - 1)

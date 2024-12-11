@@ -16,10 +16,11 @@ object Day10:
   enum Tree:
     case Leaf(value: Position)
     case Node(value: Position, branches: List[Tree])
-    def leaves: List[Position] = 
+    def leaves(matrix: Map[Position, Int]): List[Position] = 
       this match
-        case Leaf(value) => List(value)
-        case Node(_, branches) => branches.flatMap(_.leaves)
+        case Leaf(value) if (matrix(value) == 9) => List(value)
+        case Node(_, branches) => branches.flatMap(_.leaves(matrix))
+        case _ => Nil
       
   import Tree._
 
@@ -44,10 +45,16 @@ object Day10:
       case (p, i) => i == 0
     .keySet.toList
 
-    zeros.map(search(matrix)).foreach(println)
-    zeros.map(search(matrix)).flatMap(_.leaves).filter(matrix(_) == 9).size
+    zeros.map(search(matrix)).map(_.leaves(matrix).toSet.size).sum
 
-  def part2(input: String): Int = ???
+  def part2(input: String): Int = 
+    val matrix = parse(input)
+
+    val zeros = matrix.filter:
+      case (p, i) => i == 0
+    .keySet.toList
+
+    zeros.map(search(matrix)).map(_.leaves(matrix).size).sum
 
 @main def main: Unit =
   val input = Source.fromFile("input/day10.txt").getLines().mkString("\n")

@@ -23,7 +23,7 @@ class Day9Suite extends munit.FunSuite:
     assertEquals(compact1(parse("00...111...2...333.44.5555.6666.777.888899")), parse("0099811188827773336446555566.............."))
 
   test("Day9 part1 compact example 2"):
-    assertEquals(compact1(parse("0..111....22222").toBuffer), parse("022111222......"))
+    assertEquals(compact1(parse("0..111....22222")), parse("022111222......"))
 
   test("Day9 part1 checksum example 1"):
     assertEquals(checksum(parse("0099811188827773336446555566..............")), 1928L)

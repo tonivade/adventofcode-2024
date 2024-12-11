@@ -50,8 +50,9 @@ object Day9:
       // find first non free sector starting the from end
       val reversePosition = input.reverseIterator.indexWhere(_ != Free, end)
       val filePosition = input.size - reversePosition - 1
+      val file = input(filePosition)
       // calculate the size of the file
-      val fileSize = input.reverseIterator.drop(reversePosition).takeWhile(_ == input(filePosition)).size
+      val fileSize = input.reverseIterator.drop(reversePosition).takeWhile(_ == file).size
       val end1 = System.nanoTime() - start1
 
       val start2 = System.nanoTime()
@@ -66,7 +67,7 @@ object Day9:
           input(filePosition - i) = Free
       val end3 = System.nanoTime() - start3
 
-      println(s"${input(freePosition)} file: $end1, free: $end2, swap: $end3, total: ${System.nanoTime() - start1}")
+      println(s"${file} file: $end1, free: $end2, swap: $end3, total: ${System.nanoTime() - start1}")
       
       compact2(input, input.indexWhere(_ == Free, start), reversePosition + fileSize)
 

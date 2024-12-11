@@ -46,29 +46,21 @@ object Day9:
     if (start >= input.size - end)
       input
     else
-      val start1 = System.nanoTime()
       // find first non free sector starting the from end
       val reversePosition = input.reverseIterator.indexWhere(!processed.contains(_), end)
       val filePosition = input.size - reversePosition - 1
       val file = input(filePosition)
       // calculate the size of the file
       val fileSize = input.reverseIterator.drop(reversePosition).takeWhile(_ == file).size
-      val end1 = System.nanoTime() - start1
 
-      val start2 = System.nanoTime()
       // find first free slot to put the file
       val freePosition = input.take(filePosition - fileSize).indexOfSlice(Free.repeat(fileSize), start)
-      val end2 = System.nanoTime() - start2
 
-      val start3 = System.nanoTime()
       if (freePosition > -1)
         for (i <- 0 until fileSize) 
           input(freePosition + i) = input(filePosition - i)
           input(filePosition - i) = Free
-      val end3 = System.nanoTime() - start3
-
-      println(s"${file} file: $end1, free: $end2, swap: $end3, total: ${System.nanoTime() - start1}")
-      
+        
       compact2(input, input.indexWhere(_ == Free, start), reversePosition + fileSize, processed + file)
 
   def checksum(input: Iterable[Sector]): Long = 
@@ -89,5 +81,6 @@ object Day9:
 @main def main: Unit =
   val input = Source.fromFile("input/day9.txt").getLines().mkString("\n")
   println(Day9.part1(input))
+  // it doesnt work and it takes 5 1/2 hours my result: 6636608910639, correct one 6636608781232
   println(Day9.part2(input))
 

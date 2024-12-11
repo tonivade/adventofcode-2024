@@ -14,24 +14,25 @@ object Day11:
         List(x.take(x.size / 2).toLong, x.drop(x.size / 2).toLong)
       case x => List(stone * 2024L)
 
-  @tailrec
-  def blink(stones: Map[Long, Long], step: Int): Map[Long, Long] =
-    if (step > 0)
-      val res = stones.iterator.flatMap:
-        case (stone, count) => rules(stone).map(_ -> count)
-      .toList
-      blink(res.groupMapReduce(_._1)(_._2)(_ + _), step - 1)
-    else
-      stones
+  extension (stones: Map[Long, Long])
+    @tailrec
+    def blink(step: Int): Map[Long, Long] =
+      if (step > 0)
+        val next = stones.iterator.flatMap:
+          case (stone, count) => rules(stone).map(_ -> count)
+        .toList
+        next.groupMapReduce(_._1)(_._2)(_ + _).blink(step - 1)
+      else
+        stones
 
   def parse(input: String): Map[Long, Long] =
-    input.split(" ").map(_.toLong).groupMapReduce(identity)(_ => 1L)(_ + _)
+    input.split(" ").map(_.toLong -> 1L).toMap
 
   def part1(input: String): Long = 
-    blink(parse(input), 25).values.sum
+    parse(input).blink(25).values.sum
 
   def part2(input: String): Long =
-    blink(parse(input), 75).values.sum
+    parse(input).blink(75).values.sum
 
 @main def main: Unit =
   val input = Source.fromFile("input/day11.txt").getLines().mkString("\n")

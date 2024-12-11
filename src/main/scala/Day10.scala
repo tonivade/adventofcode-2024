@@ -6,6 +6,7 @@ import scala.annotation.tailrec
 // https://adventofcode.com/2024/day/10
 object Day10:
 
+
   case class Position(x: Int, y: Int):
     def up = Position(x, y + 1)
     def down = Position(x, y - 1)
@@ -37,24 +38,20 @@ object Day10:
       Leaf(start)
     else
       Node(start, next.map(search(matrix)))
+  
+  extension (matrix: Map[Position, Int])
+    def paths: List[List[Position]] = 
+      val zeros = matrix.filter:
+        case (p, i) => i == 0
+      .keySet.toList
+
+      zeros.map(search(matrix)).map(_.leaves(matrix))
 
   def part1(input: String): Int = 
-    val matrix = parse(input)
-
-    val zeros = matrix.filter:
-      case (p, i) => i == 0
-    .keySet.toList
-
-    zeros.map(search(matrix)).map(_.leaves(matrix).toSet.size).sum
+    parse(input).paths.map(_.toSet.size).sum
 
   def part2(input: String): Int = 
-    val matrix = parse(input)
-
-    val zeros = matrix.filter:
-      case (p, i) => i == 0
-    .keySet.toList
-
-    zeros.map(search(matrix)).map(_.leaves(matrix).size).sum
+    parse(input).paths.map(_.size).sum
 
 @main def main: Unit =
   val input = Source.fromFile("input/day10.txt").getLines().mkString("\n")

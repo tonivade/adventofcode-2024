@@ -42,13 +42,13 @@ object Day9:
       compact1(input, freePosition, reversePosition)
   
   @tailrec
-  def compact2(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = 
-    if (end >= input.size)
+  def compact2(input: Buffer[Sector], start: Int = 0, end: Int = 0, processed: Set[Sector] = Set(Free)): Buffer[Sector] =
+    if (start >= input.size - end)
       input
     else
       val start1 = System.nanoTime()
       // find first non free sector starting the from end
-      val reversePosition = input.reverseIterator.indexWhere(_ != Free, end)
+      val reversePosition = input.reverseIterator.indexWhere(!processed.contains(_), end)
       val filePosition = input.size - reversePosition - 1
       val file = input(filePosition)
       // calculate the size of the file
@@ -69,7 +69,7 @@ object Day9:
 
       println(s"${file} file: $end1, free: $end2, swap: $end3, total: ${System.nanoTime() - start1}")
       
-      compact2(input, input.indexWhere(_ == Free, start), reversePosition + fileSize)
+      compact2(input, input.indexWhere(_ == Free, start), reversePosition + fileSize, processed + file)
 
   def checksum(input: Iterable[Sector]): Long = 
     input.zipWithIndex.foldLeft(0L):

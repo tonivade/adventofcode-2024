@@ -9,8 +9,7 @@ object Day12:
     def down = Position(x, y - 1)
     def right = Position(x + 1, y)
     def left = Position(x - 1, y)
-    def adjacent = List(up, down, left, right)
-    def areClose(other: Position) = adjacent.contains(other)
+    def adjacent = Set(up, down, left, right)
 
   case class Shape(positions: Set[Position]):
     def area: Int = positions.size
@@ -26,7 +25,7 @@ object Day12:
     .toMap
 
   def neighbors(matrix: Map[Position, Char])(position: Position): Set[Position] = 
-    position.adjacent.filter(matrix.contains).filter(matrix(_) == matrix(position)).toSet
+    position.adjacent.filter(matrix.contains).filter(matrix(_) == matrix(position))
 
   def visit(matrix: Map[Position, Char])(position: Position, visited: Set[Position] = Set.empty): Set[Position] =
     if (visited.contains(position))

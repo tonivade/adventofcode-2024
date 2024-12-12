@@ -1,6 +1,7 @@
 package day12
 
 import scala.io.Source
+import scala.collection.mutable
 
 // https://adventofcode.com/2024/day/12
 object Day12:
@@ -24,19 +25,22 @@ object Day12:
         (ch, x) => Position(x, y) -> ch
     .toMap
 
-  def neighbors(matrix: Map[Position, Char])(position: Position): Set[Position] = 
-    position.adjacent.filter(matrix.contains).filter(matrix(_) == matrix(position))
+  def search(positions: Set[Position]): Set[Shape] =
+    val visited = mutable.Set.empty[Position]
 
-  def visit(matrix: Map[Position, Char])(position: Position, visited: Set[Position] = Set.empty): Set[Position] =
-    if (visited.contains(position))
-      Set.empty
-    else
-      neighbors(matrix)(position).flatMap(visit(matrix)(_, visited + position)) + position
+    def neighbors(positions: Set[Position])(current: Position): Set[Position] = 
+      current.adjacent.filter(positions.contains)
 
-  def search(matrix: Map[Position, Char])(positions: Iterable[Position]): Set[Shape] =
+    def visit(positions: Set[Position])(current: Position): Set[Position] =
+      if (visited.contains(current))
+        Set.empty
+      else
+        visited.addOne(current)
+        neighbors(positions)(current).flatMap(visit(positions)) + current
+    
     positions.foldLeft(Set.empty[Shape]):
-      case (shapes, position) if (shapes.exists(_.contains(position))) => println(s"not new $position"); shapes
-      case (shapes, position) => println(s"new $position"); shapes + Shape(visit(matrix)(position))
+      case (shapes, position) if (shapes.exists(_.contains(position))) => shapes
+      case (shapes, position) => shapes + Shape(visit(positions)(position))
 
   def part1(input: String): Int = 
     val matrix = parse(input)
@@ -44,8 +48,7 @@ object Day12:
     val colors = matrix.groupMap(_._2)(_._1)
 
     val result = colors.map:
-      case (color, positions) => 
-        println(s"$color ${positions.size}"); (color -> search(matrix)(positions))
+      case (color, positions) => (color -> search(positions.toSet))
     
     result.flatMap(_._2).map(_.fence).sum
 

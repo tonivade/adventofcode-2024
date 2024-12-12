@@ -12,11 +12,31 @@ object Day12:
     def left = Position(x - 1, y)
     def adjacent = Set(up, down, left, right)
 
+  def vertex = Set(Position(1, 1), Position(1, -1), Position(-1, 1), Position(-1, -1))
+
   case class Shape(positions: Set[Position]):
     def area: Int = positions.size
     def perimeter: Int = positions.foldLeft(0):
       case (result, position) => result + position.adjacent.filter(!positions.contains(_)).size
-    def sides: Int = ???
+    def sides: Int = 
+      val all = for {
+        position <- positions
+        corner <- vertex
+      } yield (position, corner)
+
+      all.count:
+        case (Position(px, py), Position(cx, cy)) => 
+          val adj1 = Position(px + cx, py)
+          val adj2 = Position(px, py + cy)
+          val dia = Position(px + cx, py + cy)
+          val hasAdj1 = positions.contains(adj1)
+          val hasAdj2 = positions.contains(adj2)
+          val hasDia = positions.contains(dia)
+          
+          (hasAdj1 && hasAdj2 && !hasDia) 
+            || (!hasAdj1 && !hasAdj2 && !hasDia)
+            || (!hasAdj1 && !hasAdj2 && hasDia)
+
     def fence1: Int = area * perimeter
     def fence2: Int = area * sides
     def contains(p: Position): Boolean = positions.contains(p)

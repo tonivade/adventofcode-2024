@@ -65,7 +65,7 @@ object Day9:
   @tailrec
   def compact2(freeBlocks: Buffer[FreeBlock], fileBlocks: Buffer[FileBlock], current: Int = 0): Buffer[Sector] =
     if (current >= fileBlocks.size)
-      (fileBlocks ++ freeBlocks).sortBy(_.start).flatMap(_.sectors)
+      (fileBlocks ++ freeBlocks.filter(_.size > 0)).sortBy(_.start).flatMap(_.sectors)
     else
       val file = fileBlocks(current)
       val freePosition = freeBlocks.indexWhere(free => free.start < file.start && free.size >= file.size)

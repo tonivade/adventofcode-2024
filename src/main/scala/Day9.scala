@@ -63,22 +63,20 @@ object Day9:
       compact1(input, freePosition, reversePosition)
   
   @tailrec
-  def compact2(freeBlocks: Buffer[FreeBlock], fileBlocks: Buffer[FileBlock], end: Int = 0): Buffer[Sector] =
-    if (end >= fileBlocks.size)
+  def compact2(freeBlocks: Buffer[FreeBlock], fileBlocks: Buffer[FileBlock], current: Int = 0): Buffer[Sector] =
+    if (current >= fileBlocks.size)
       (fileBlocks ++ freeBlocks).sortBy(_.start).flatMap(_.sectors)
     else
-      val file = fileBlocks(end)
+      val file = fileBlocks(current)
       val freePosition = freeBlocks.indexWhere(free => free.start < file.start && free.size >= file.size)
       
       if (freePosition > -1)
         val free = freeBlocks(freePosition)
-        fileBlocks(end) = FileBlock(file.id, free.start, file.size)
+        fileBlocks(current) = FileBlock(file.id, free.start, file.size)
         freeBlocks(freePosition) = FreeBlock(free.start + file.size, free.size - file.size)
-        val newFreeBlocks: Buffer[FreeBlock] = (freeBlocks :+ FreeBlock(file.start, file.size))
-        val sortedFreeBlocks = newFreeBlocks.filter(_.size > 0).sortBy(_.start)
-        compact2(sortedFreeBlocks, fileBlocks, end + 1)
-      else
-        compact2(freeBlocks, fileBlocks, end + 1)
+        freeBlocks.addOne(FreeBlock(file.start, file.size))
+      
+      compact2(freeBlocks, fileBlocks, current + 1)
 
   def checksum(input: Iterable[Sector]): Long = 
     input.zipWithIndex.foldLeft(0L):

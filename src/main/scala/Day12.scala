@@ -10,6 +10,7 @@ object Day12:
     def right = Position(x + 1, y)
     def left = Position(x - 1, y)
     def adjacent = List(up, down, left, right)
+    def areClose(other: Position) = adjacent.contains(other)
 
   case class Shape(positions: Set[Position]):
     def area: Int = positions.size
@@ -27,27 +28,27 @@ object Day12:
   def neighbors(matrix: Map[Position, Char])(position: Position): Set[Position] = 
     position.adjacent.filter(matrix.contains).filter(matrix(_) == matrix(position)).toSet
 
-  def search(matrix: Map[Position, Char])(position: Position, visited: Set[Position] = Set.empty): Set[Position] =
-    val next = neighbors(matrix)(position)
-    next ++ next.diff(visited).flatMap(search(matrix)(_, visited + position)) + position
+  def visit(matrix: Map[Position, Char])(position: Position, visited: Set[Position] = Set.empty): Set[Position] =
+    if (visited.contains(position))
+      Set.empty
+    else
+      neighbors(matrix)(position).flatMap(visit(matrix)(_, visited + position)) + position
+
+  def search(matrix: Map[Position, Char])(positions: Iterable[Position]): Set[Shape] =
+    positions.foldLeft(Set.empty[Shape]):
+      case (shapes, position) if (shapes.exists(_.contains(position))) => println(s"not new $position"); shapes
+      case (shapes, position) => println(s"new $position"); shapes + Shape(visit(matrix)(position))
 
   def part1(input: String): Int = 
     val matrix = parse(input)
 
     val colors = matrix.groupMap(_._2)(_._1)
 
-    println(colors.size)
-
     val result = colors.map:
-      case (color, positions) => println(color); (color -> positions.foldLeft(Set.empty[Shape]):
-        case (shapes, position) if (shapes.exists(_.contains(position))) => shapes
-        case (shapes, position) => shapes + Shape(search(matrix)(position))
-      )
-    
-    println(result.size)
+      case (color, positions) => 
+        println(s"$color ${positions.size}"); (color -> search(matrix)(positions))
     
     result.flatMap(_._2).map(_.fence).sum
-
 
   def part2(input: String): Int = ???
 

@@ -67,7 +67,7 @@ object Day9:
       (fileBlocks ++ freeBlocks).sortBy(_.start).flatMap(_.sectors)
     else
       val file = fileBlocks(end)
-      val freePosition = freeBlocks.indexWhere(free=> free.start < file.start && free.size >= file.size)
+      val freePosition = freeBlocks.indexWhere(free => free.start < file.start && free.size >= file.size)
       
       if (freePosition > -1)
         val free = freeBlocks(freePosition)
@@ -91,7 +91,7 @@ object Day9:
 
   def part2(input: String): Long = 
     val (freeBlocks, fileBlocks) = expand2(input)
-    val compacted = compact2(freeBlocks, fileBlocks.sortBy(_.id).reverse)
+    val compacted = compact2(freeBlocks, fileBlocks.reverse)
     checksum(compacted)
 
 @main def main: Unit =

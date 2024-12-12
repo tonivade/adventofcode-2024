@@ -14,10 +14,10 @@ class Day9Suite extends munit.FunSuite:
     .toBuffer
     
   test("Day9 part1 expand example 1"):
-    assertEquals(expand(input), parse("00...111...2...333.44.5555.6666.777.888899"))
+    assertEquals(expand1(input), parse("00...111...2...333.44.5555.6666.777.888899"))
 
   test("Day9 part1 expand example 2"):
-    assertEquals(expand("12345"), parse("0..111....22222"))
+    assertEquals(expand1("12345"), parse("0..111....22222"))
 
   test("Day9 part1 compact example 1"):
     assertEquals(compact1(parse("00...111...2...333.44.5555.6666.777.888899")), parse("0099811188827773336446555566.............."))
@@ -30,9 +30,6 @@ class Day9Suite extends munit.FunSuite:
 
   test("Day9 part1"):
     assertEquals(part1(input), 1928L)
-
-  test("Day9 part2 compact example 1"):
-    assertEquals(compact2(parse("00...111...2...333.44.5555.6666.777.888899")), parse("00992111777.44.333....5555.6666.....8888.."))
 
   test("Day9 part2 checksum example 1"):
     assertEquals(checksum(parse("00992111777.44.333....5555.6666.....8888..")), 2858L)

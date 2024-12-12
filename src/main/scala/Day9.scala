@@ -3,6 +3,7 @@ package day9
 import scala.io.Source
 import scala.annotation.tailrec
 import scala.collection.mutable.Buffer
+import day9.Day9.Sector.File
 
 // https://adventofcode.com/2024/day/9
 object Day9:
@@ -15,10 +16,21 @@ object Day9:
         Nil
       else
         (1 to times).map(_ => this).toList
-
+  
   import Sector._
 
-  def expand(input: String): Buffer[Sector] = 
+  enum Block:
+    case FileBlock(id: Long, start: Int, size: Int)
+    case FreeBlock(start: Int, size: Int)
+    def start: Int
+    def sectors: List[Sector] =
+      this match
+        case FileBlock(id, _, size) => File(id).repeat(size)
+        case FreeBlock(_, size) => Free.repeat(size)
+      
+  import Block._
+
+  def expand1(input: String): Buffer[Sector] = 
     input.zipWithIndex.foldLeft(0L, Buffer.empty[Sector]):
       case ((fileId, result), (ch, i)) =>
         if (i % 2 == 0)
@@ -26,6 +38,15 @@ object Day9:
         else
           (fileId, result ++ Free.repeat(ch.toInt - 48))
     ._2
+
+  def expand2(input: String): (Buffer[FreeBlock], Buffer[FileBlock]) = 
+    input.zipWithIndex.foldLeft(0L, 0, (Buffer.empty[FreeBlock], Buffer.empty[FileBlock])):
+      case ((fileId, position, (freeBlocks, fileBlocks)), (ch, i)) =>
+        if (i % 2 == 0)
+          (fileId + 1, position + ch.toInt - 48, (freeBlocks, fileBlocks :+ FileBlock(fileId, position, ch.toInt - 48)))
+        else
+          (fileId, position + ch.toInt - 48, (freeBlocks :+ FreeBlock(position, ch.toInt - 48), fileBlocks))
+    ._3
 
   @tailrec
   def compact1(input: Buffer[Sector], start: Int = 0, end: Int = 0): Buffer[Sector] = 
@@ -41,26 +62,22 @@ object Day9:
       compact1(input, freePosition, reversePosition)
   
   @tailrec
-  def compact2(input: Buffer[Sector], start: Int = 0, end: Int = 0, processed: Set[Sector] = Set(Free)): Buffer[Sector] =
-    if (start >= input.size - end)
-      input
+  def compact2(freeBlocks: Buffer[FreeBlock], fileBlocks: Buffer[FileBlock], end: Int = 0): Buffer[Sector] =
+    if (end >= fileBlocks.size)
+      (fileBlocks ++ freeBlocks).sortBy(_.start).flatMap(_.sectors)
     else
-      // find first non free sector starting the from end
-      val reversePosition = input.reverseIterator.indexWhere(!processed.contains(_), end)
-      val filePosition = input.size - reversePosition - 1
-      val file = input(filePosition)
-      // calculate the size of the file
-      val fileSize = input.reverseIterator.drop(reversePosition).takeWhile(_ == file).size
-
-      // find first free slot to put the file
-      val freePosition = input.take(filePosition - fileSize).indexOfSlice(Free.repeat(fileSize), start)
-
+      val file = fileBlocks(end)
+      val freePosition = freeBlocks.indexWhere(free=> free.start < file.start && free.size >= file.size)
+      
       if (freePosition > -1)
-        for (i <- 0 until fileSize) 
-          input(freePosition + i) = input(filePosition - i)
-          input(filePosition - i) = Free
-        
-      compact2(input, input.indexWhere(_ == Free, start), reversePosition + fileSize, processed + file)
+        val free = freeBlocks(freePosition)
+        fileBlocks(end) = FileBlock(file.id, free.start, file.size)
+        freeBlocks(freePosition) = FreeBlock(free.start + file.size, free.size - file.size)
+        val newFreeBlocks: Buffer[FreeBlock] = (freeBlocks :+ FreeBlock(file.start, file.size))
+        val sortedFreeBlocks = newFreeBlocks.filter(_.size > 0).sortBy(_.start)
+        compact2(sortedFreeBlocks, fileBlocks, end + 1)
+      else
+        compact2(freeBlocks, fileBlocks, end + 1)
 
   def checksum(input: Iterable[Sector]): Long = 
     input.zipWithIndex.foldLeft(0L):
@@ -68,18 +85,17 @@ object Day9:
       case (sum, _) => sum
 
   def part1(input: String): Long = 
-    val expanded = expand(input)
+    val expanded = expand1(input)
     val compacted = compact1(expanded)
     checksum(compacted)
 
   def part2(input: String): Long = 
-    val expanded = expand(input)
-    val compacted = compact2(expanded)
+    val (freeBlocks, fileBlocks) = expand2(input)
+    val compacted = compact2(freeBlocks, fileBlocks.sortBy(_.id).reverse)
     checksum(compacted)
 
 @main def main: Unit =
   val input = Source.fromFile("input/day9.txt").getLines().mkString("\n")
   println(Day9.part1(input))
-  // it doesnt work and it takes 5 1/2 hours my result: 6636608910639, correct one 6636608781232
   println(Day9.part2(input))
 

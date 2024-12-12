@@ -16,7 +16,9 @@ object Day12:
     def area: Int = positions.size
     def perimeter: Int = positions.foldLeft(0):
       case (result, position) => result + position.adjacent.filter(!positions.contains(_)).size
-    def fence: Int = area * perimeter
+    def sides: Int = ???
+    def fence1: Int = area * perimeter
+    def fence2: Int = area * sides
     def contains(p: Position): Boolean = positions.contains(p)
 
   def parse(input: String): Map[Position, Char] = 
@@ -42,17 +44,18 @@ object Day12:
       case (shapes, position) if (shapes.exists(_.contains(position))) => shapes
       case (shapes, position) => shapes + Shape(visit(positions)(position))
 
-  def part1(input: String): Int = 
+  def groups(input: String): Iterable[Shape] =
     val matrix = parse(input)
-
     val colors = matrix.groupMap(_._2)(_._1)
-
     val result = colors.map:
       case (color, positions) => (color -> search(positions.toSet))
-    
-    result.flatMap(_._2).map(_.fence).sum
+    result.flatMap(_._2)
 
-  def part2(input: String): Int = ???
+  def part1(input: String): Int = 
+    groups(input).map(_.fence1).sum
+
+  def part2(input: String): Int =
+    groups(input).map(_.fence2).sum
 
 @main def main: Unit =
   val input = Source.fromFile("input/day12.txt").getLines().mkString("\n")

@@ -31,6 +31,9 @@ class Day12Suite extends munit.FunSuite:
   test("Day12 shape perimeter"):
     assertEquals(Shape(Set(Position(0, 0), Position(1, 0), Position(2, 0), Position(3, 0))).perimeter, 10)
 
+  test("Day12 shape sides".ignore):
+    assertEquals(Shape(Set(Position(0, 0), Position(1, 0), Position(2, 0), Position(3, 0))).sides, 4)
+
   test("Day12 part1 input1"):
     assertEquals(part1(input1), 140)
 
@@ -40,6 +43,12 @@ class Day12Suite extends munit.FunSuite:
   test("Day12 part1"):
     assertEquals(part1(input), 1930)
 
+  test("Day12 part2 input1".ignore):
+    assertEquals(part2(input1), 80)
+
+  test("Day12 part2 input2".ignore):
+    assertEquals(part2(input2), 436)
+
   test("Day12 part2".ignore):
-    assertEquals(part2(input), 1)
+    assertEquals(part2(input), 1206)
 

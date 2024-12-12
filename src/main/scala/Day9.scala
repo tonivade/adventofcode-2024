@@ -42,10 +42,11 @@ object Day9:
   def expand2(input: String): (Buffer[FreeBlock], Buffer[FileBlock]) = 
     input.zipWithIndex.foldLeft(0L, 0, (Buffer.empty[FreeBlock], Buffer.empty[FileBlock])):
       case ((fileId, position, (freeBlocks, fileBlocks)), (ch, i)) =>
+        val size = ch.toInt - 48
         if (i % 2 == 0)
-          (fileId + 1, position + ch.toInt - 48, (freeBlocks, fileBlocks :+ FileBlock(fileId, position, ch.toInt - 48)))
+          (fileId + 1, position + size, (freeBlocks, fileBlocks :+ FileBlock(fileId, position, size)))
         else
-          (fileId, position + ch.toInt - 48, (freeBlocks :+ FreeBlock(position, ch.toInt - 48), fileBlocks))
+          (fileId, position + size, (freeBlocks :+ FreeBlock(position, size), fileBlocks))
     ._3
 
   @tailrec

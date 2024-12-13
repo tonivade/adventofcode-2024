@@ -15,8 +15,12 @@ object Day13:
       val rhs = prize.x * buttonB.y - prize.y * buttonB.x
       if (rhs % aCoeff == 0)
         val a = rhs / aCoeff
-        val b = (prize.x - buttonA.x * a) / buttonB.x
-        Some(a * buttonA.cost + b * buttonB.cost)
+        val rest = prize.x - buttonA.x * a 
+        if (rest % buttonB.x == 0)
+          val b = rest / buttonB.x
+          Some(a * buttonA.cost + b * buttonB.cost)
+        else
+          None
       else
         None
 

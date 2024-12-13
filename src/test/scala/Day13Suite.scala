@@ -23,6 +23,6 @@ class Day13Suite extends munit.FunSuite:
   test("Day13 part1"):
     assertEquals(part1(input), 480L)
 
-  test("Day13 part2".ignore):
-    assertEquals(part2(input), 1L)
+  test("Day13 part2"):
+    assertEquals(part2(input), 875318608908L)
 

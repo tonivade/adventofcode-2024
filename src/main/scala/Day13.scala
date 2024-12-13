@@ -32,8 +32,8 @@ object Day13:
           case prizeRegex(x, y) => Prize(x.toInt, y.toInt)
         Machine(buttonA, buttonB, prize)
 
-  def parse(input: String): Set[Machine] = 
-    input.split("\n\n").map(parseMachine).toSet
+  def parse(input: String): List[Machine] =
+    input.split("\n\n").map(parseMachine).toList
 
   def part1(input: String): Int = 
     parse(input).map(_.cost).filter(_.isDefined).map(_.get).sum

@@ -7,19 +7,27 @@ object Day13:
 
   case class Button(x: Int, y: Int)
   case class Prize(x: Int, y: Int)
-  case class Machine(a: Button, b: Button, prize: Prize):
-    def cost: Option[Int] = ???
+  case class Machine(buttonA: Button, buttonB: Button, prize: Prize):
+    def cost: Option[Int] = 
+      val aCoeff = buttonA.x * buttonB.y - buttonA.y * buttonB.x
+      val rhs = prize.x * buttonB.y - prize.y * buttonB.x
+      if (rhs % aCoeff == 0)
+        val a = rhs / aCoeff
+        val b = (prize.x - buttonA.x * a) / buttonB.x
+        Some(a * 3 + b)
+      else
+        None
 
-  val buttonRegex = """Button (A|B): X\+(\d+), Y\+(\d+)""".r
+  val buttonRegex = """Button (?:A|B): X\+(\d+), Y\+(\d+)""".r
   val prizeRegex = """Prize: X=(\d+), Y=(\d+)""".r
 
   def parseMachine(input: String): Machine = 
     input.split("\n") match
       case Array(a, b, p) =>
         val buttonA = a match
-          case buttonRegex(_, x, y) => Button(x.toInt, y.toInt)
+          case buttonRegex(x, y) => Button(x.toInt, y.toInt)
         val buttonB = b match
-          case buttonRegex(_, x, y) => Button(x.toInt, y.toInt)
+          case buttonRegex(x, y) => Button(x.toInt, y.toInt)
         val prize = p match
           case prizeRegex(x, y) => Prize(x.toInt, y.toInt)
         Machine(buttonA, buttonB, prize)
@@ -29,7 +37,7 @@ object Day13:
 
   def part1(input: String): Int = 
     parse(input).map(_.cost).filter(_.isDefined).map(_.get).sum
-    
+
   def part2(input: String): Int = ???
 
 @main def main: Unit =

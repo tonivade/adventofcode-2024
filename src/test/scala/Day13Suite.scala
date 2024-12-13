@@ -21,7 +21,7 @@ class Day13Suite extends munit.FunSuite:
                 |Prize: X=18641, Y=10279""".stripMargin
 
   test("Day13 part1"):
-    assertEquals(part1(input), 1)
+    assertEquals(part1(input), 480)
 
   test("Day13 part2".ignore):
     assertEquals(part2(input), 1)

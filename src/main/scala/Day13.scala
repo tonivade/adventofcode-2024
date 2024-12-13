@@ -5,10 +5,12 @@ import scala.io.Source
 // https://adventofcode.com/2024/day/13
 object Day13:
 
-  case class Button(x: Int, y: Int, cost: Int)
-  case class Prize(x: Int, y: Int)
+  case class Button(x: Long, y: Long, cost: Long)
+  case class Prize(x: Long, y: Long):
+    def apply(delta: Long) = Prize(x + delta, y + delta)
   case class Machine(buttonA: Button, buttonB: Button, prize: Prize):
-    def cost: Option[Int] = 
+    def apply(delta: Long) = Machine(buttonA, buttonB, prize.apply(delta))
+    def cost: Option[Long] = 
       val aCoeff = buttonA.x * buttonB.y - buttonA.y * buttonB.x
       val rhs = prize.x * buttonB.y - prize.y * buttonB.x
       if (rhs % aCoeff == 0)
@@ -35,10 +37,11 @@ object Day13:
   def parse(input: String): List[Machine] =
     input.split("\n\n").map(parseMachine).toList
 
-  def part1(input: String): Int = 
+  def part1(input: String): Long = 
     parse(input).map(_.cost).filter(_.isDefined).map(_.get).sum
 
-  def part2(input: String): Int = ???
+  def part2(input: String): Long =
+    parse(input).map(_.apply(10000000000000L)).map(_.cost).filter(_.isDefined).map(_.get).sum
 
 @main def main: Unit =
   val input = Source.fromFile("input/day13.txt").getLines().mkString("\n")

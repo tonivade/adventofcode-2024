@@ -20,7 +20,7 @@ class Day13Suite extends munit.FunSuite:
                 |Button B: X+27, Y+71
                 |Prize: X=18641, Y=10279""".stripMargin
 
-  test("Day13 part1".ignore):
+  test("Day13 part1"):
     assertEquals(part1(input), 1)
 
   test("Day13 part2".ignore):

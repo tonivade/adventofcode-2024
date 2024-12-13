@@ -5,7 +5,7 @@ import scala.io.Source
 // https://adventofcode.com/2024/day/13
 object Day13:
 
-  case class Button(x: Int, y: Int)
+  case class Button(x: Int, y: Int, cost: Int)
   case class Prize(x: Int, y: Int)
   case class Machine(buttonA: Button, buttonB: Button, prize: Prize):
     def cost: Option[Int] = 
@@ -14,7 +14,7 @@ object Day13:
       if (rhs % aCoeff == 0)
         val a = rhs / aCoeff
         val b = (prize.x - buttonA.x * a) / buttonB.x
-        Some(a * 3 + b)
+        Some(a * buttonA.cost + b * buttonB.cost)
       else
         None
 
@@ -25,9 +25,9 @@ object Day13:
     input.split("\n") match
       case Array(a, b, p) =>
         val buttonA = a match
-          case buttonRegex(x, y) => Button(x.toInt, y.toInt)
+          case buttonRegex(x, y) => Button(x.toInt, y.toInt, 3)
         val buttonB = b match
-          case buttonRegex(x, y) => Button(x.toInt, y.toInt)
+          case buttonRegex(x, y) => Button(x.toInt, y.toInt, 1)
         val prize = p match
           case prizeRegex(x, y) => Prize(x.toInt, y.toInt)
         Machine(buttonA, buttonB, prize)

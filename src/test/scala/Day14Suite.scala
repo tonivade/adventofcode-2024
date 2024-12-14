@@ -30,6 +30,6 @@ class Day14Suite extends munit.FunSuite:
     val result = quadrants(parse(input), Bounds(7, 11), 100).values.foldLeft(1)(_ * _)
     assertEquals(result, 12)
 
-  test("Day14 part2".ignore):
-    assertEquals(part2(input), 1)
+@main def main: Unit =
+  walk(parse(Day14Suite().input), Bounds(7, 11), 500)
 

@@ -2,6 +2,7 @@ package day14
 
 import scala.io.Source
 import scala.annotation.tailrec
+import scala.io.StdIn.readLine
 
 // https://adventofcode.com/2024/day/14
 object Day14:
@@ -43,12 +44,40 @@ object Day14:
       val nextY = position.y + speed.y
       Robot(bounds.teleport(Position(nextX, nextY)), speed)
 
+  def mkString(robots: List[Robot], bounds: Bounds): String = 
+    val occupied = robots.groupBy(_.position).keySet
+    def atPosition(position: Position): String = 
+      if occupied.contains(position) then "#" else "."
+
+    val buffer = new StringBuffer
+    buffer.append(" ")
+    for (x <- 0 until bounds.width)
+      buffer.append(x % 10)
+    buffer.append("\n")
+    for (y <- 0 until bounds.height)
+      buffer.append(y % 10)
+      for (x <- 0 until bounds.width)
+        buffer.append(atPosition(Position(x, y)))
+      buffer.append("\n")
+    buffer.toString
+
   @tailrec
   def walk(robots: List[Robot], bounds: Bounds, steps: Int): List[Robot] = 
     if (steps > 0)
       walk(robots.map(_.step(bounds)), bounds, steps - 1)
     else
       robots
+
+  def visibleRobots(robots: List[Robot]): Int =
+    robots.groupBy(_.position).size
+  
+  def walk2(robots: List[Robot], bounds: Bounds, steps: Int, visible: Map[Int, Int] = Map.empty): Map[Int, Int] = 
+//    println(s"$steps")
+//    println(mkString(robots, bounds))
+    if (steps > 0)
+      walk2(robots.map(_.step(bounds)), bounds, steps - 1, visible + (steps -> visibleRobots(robots)))
+    else
+      visible
 
   def parseRobot(line: String): Robot = 
     val regex = """p=(\-?\d+),(\-?\d+) v=(\-?\d+),(\-?\d+)""".r
@@ -67,7 +96,12 @@ object Day14:
   def part1(input: String): Int = 
     quadrants(parse(input), Bounds(103, 101), 100).values.foldLeft(1)(_ * _)
 
-  def part2(input: String): Int = ???
+  def part2(input: String): Int = 
+    val robots = parse(input)
+    val bounds = Bounds(103, 101)
+    val result = 10000 - walk2(robots, bounds, 10000).maxBy(_._2)._1
+    println(mkString(walk(robots, bounds, result), bounds))
+    result
 
 @main def main: Unit =
   val input = Source.fromFile("input/day14.txt").getLines().mkString("\n")

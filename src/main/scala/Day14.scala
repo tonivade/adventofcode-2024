@@ -29,7 +29,6 @@ object Day14:
       Position(nextX, nextY)
 
     def quadrant(robot: Robot): Int =
-
       robot.position match
         case (Position(x, y)) if (x < midX && y < midY) => 0
         case (Position(x, y)) if (x > midX && y < midY) => 1
@@ -46,9 +45,6 @@ object Day14:
 
   def mkString(robots: List[Robot], bounds: Bounds): String = 
     val occupied = robots.groupBy(_.position).keySet
-    def atPosition(position: Position): String = 
-      if occupied.contains(position) then "#" else "."
-
     val buffer = new StringBuffer
     buffer.append(" ")
     for (x <- 0 until bounds.width)
@@ -57,7 +53,7 @@ object Day14:
     for (y <- 0 until bounds.height)
       buffer.append(y % 10)
       for (x <- 0 until bounds.width)
-        buffer.append(atPosition(Position(x, y)))
+        buffer.append(if occupied.contains(Position(x, y)) then "#" else ".")
       buffer.append("\n")
     buffer.toString
 
@@ -72,8 +68,6 @@ object Day14:
     robots.groupBy(_.position).size
   
   def walk2(robots: List[Robot], bounds: Bounds, steps: Int, visible: Map[Int, Int] = Map.empty): Map[Int, Int] = 
-//    println(s"$steps")
-//    println(mkString(robots, bounds))
     if (steps > 0)
       walk2(robots.map(_.step(bounds)), bounds, steps - 1, visible + (steps -> visibleRobots(robots)))
     else

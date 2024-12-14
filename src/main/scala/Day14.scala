@@ -67,6 +67,7 @@ object Day14:
   def visibleRobots(robots: List[Robot]): Int =
     robots.groupBy(_.position).size
   
+  @tailrec
   def walk2(robots: List[Robot], bounds: Bounds, steps: Int, visible: Map[Int, Int] = Map.empty): Map[Int, Int] = 
     if (steps > 0)
       walk2(robots.map(_.step(bounds)), bounds, steps - 1, visible + (steps -> visibleRobots(robots)))

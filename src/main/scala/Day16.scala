@@ -25,7 +25,6 @@ object Day16:
         case Left => Up
         case Right => Down
     
- 
   import Direction._
 
   case class Position(x: Int, y: Int):
@@ -37,14 +36,14 @@ object Day16:
 
   case class Node(position: Position, direction: Direction, cost: Int) extends Ordered[Node]:
     def compare(that: Node): Int = that.cost - this.cost
-    def forward(matrix: Map[Position, Tile]): Option[Node] =
+    def vertices(matrix: Map[Position, Tile]): List[Node] =
       val next = position.move(direction)
       if (matrix.contains(next) && matrix(next) != Wall)
-        Some(Node(next, direction, cost + 1))
+        List(Node(next, direction, cost + 1), turnLeft, turnRight)
       else
-        None
-    def turnLeft: Node = Node(position, direction.turnLeft, cost + 1000)
-    def turnRight: Node = Node(position, direction.turnRight, cost + 1000)
+        List(turnLeft, turnRight)
+    private def turnLeft: Node = Node(position, direction.turnLeft, cost + 1000)
+    private def turnRight: Node = Node(position, direction.turnRight, cost + 1000)
 
   def parse(input: String): Map[Position, Tile] = 
     input.linesIterator.zipWithIndex.flatMap:
@@ -66,9 +65,7 @@ object Day16:
       if (matrix(current.position) == End && current.cost < cost)
         cost = current.cost
       else if (visited.add((current.position, current.direction)))
-        for (node <- current.forward(matrix)) queue.enqueue(node)
-        queue.enqueue(current.turnLeft)
-        queue.enqueue(current.turnRight)
+        current.vertices(matrix).foreach(queue.enqueue(_))
     cost
 
   def part1(input: String): Int = 

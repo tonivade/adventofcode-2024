@@ -35,15 +35,15 @@ object Day16:
   import Tile._
 
   case class Node(position: Position, direction: Direction, cost: Int) extends Ordered[Node]:
-    def compare(that: Node): Int = that.cost - this.cost
+    def turnLeft: Node = Node(position, direction.turnLeft, cost + 1000)
+    def turnRight: Node = Node(position, direction.turnRight, cost + 1000)
     def vertices(matrix: Map[Position, Tile]): List[Node] =
       val next = position.move(direction)
       if (matrix.contains(next) && matrix(next) != Wall)
         List(Node(next, direction, cost + 1), turnLeft, turnRight)
       else
         List(turnLeft, turnRight)
-    private def turnLeft: Node = Node(position, direction.turnLeft, cost + 1000)
-    private def turnRight: Node = Node(position, direction.turnRight, cost + 1000)
+    def compare(that: Node): Int = that.cost - this.cost
 
   def parse(input: String): Map[Position, Tile] = 
     input.linesIterator.zipWithIndex.flatMap:

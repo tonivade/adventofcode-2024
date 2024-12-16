@@ -1,52 +1,50 @@
 package day16
 
 import scala.io.Source
-import scala.annotation.tailrec
+import scala.collection.mutable.PriorityQueue
+import scala.collection.mutable.HashSet
 
 // https://adventofcode.com/2024/day/16
 object Day16:
 
-  enum Direction:
-    case Up, Down, Left, Right
-    def turn(other: Direction): Boolean =
-      (this, other) match
-        case (Up, Up) => false
-        case (Down, Down) => false
-        case (Left, Left) => false
-        case (Right, Right) => false
-        case (Up, Left) => true
-        case (Up, Right) => true
-        case (Down, Left) => true
-        case (Down, Right) => true
-        case (Left, Up) => true
-        case (Left, Down) => true
-        case (Right, Up) => true
-        case (Right, Down) => true
-        case _ => throw RuntimeException("not possible")
-      
+  enum Direction(val x: Int, val y: Int):
+    case Up extends Direction(0, -1)
+    case Down extends Direction(0, 1)
+    case Left extends Direction(-1, 0)
+    case Right extends Direction(1, 0)
+    def turnLeft: Direction =
+      this match
+        case Up => Left
+        case Down => Right
+        case Left => Down
+        case Right => Up
+    def turnRight: Direction =
+      this match
+        case Up => Right
+        case Down => Left
+        case Left => Up
+        case Right => Down
+    
+ 
   import Direction._
 
   case class Position(x: Int, y: Int):
-    def up = Position(x, y - 1)
-    def down = Position(x, y + 1)
-    def left = Position(x - 1, y)
-    def right = Position(x + 1, y)
-    def adjacent = List(up, down, left, right)
+    def move(direction: Direction) = Position(x + direction.x, y + direction.y)
 
   enum Tile:
     case Start, End, Free, Wall
   import Tile._
 
-  enum Tree:
-    case Node(position: Position, up: Tree, down: Tree, left: Tree, right: Tree)
-    case Target(cost: Int)
-    case Dead
-    def leaves: List[Target] =
-      this match
-        case t:Target => List(t)
-        case Dead => List()
-        case Node(_, up, down, left, right) => up.leaves ++ down.leaves ++ left.leaves ++ right.leaves
-  import Tree._
+  case class Node(position: Position, direction: Direction, cost: Int) extends Ordered[Node]:
+    def compare(that: Node): Int = that.cost - this.cost
+    def forward(matrix: Map[Position, Tile]): Option[Node] =
+      val next = position.move(direction)
+      if (matrix.contains(next) && matrix(next) != Wall)
+        Some(Node(next, direction, cost + 1))
+      else
+        None
+    def turnLeft: Node = Node(position, direction.turnLeft, cost + 1000)
+    def turnRight: Node = Node(position, direction.turnRight, cost + 1000)
 
   def parse(input: String): Map[Position, Tile] = 
     input.linesIterator.zipWithIndex.flatMap:
@@ -57,41 +55,24 @@ object Day16:
         case ('#', x) => Position(x, y) -> Wall
     .toMap
 
-  def search(matrix: Map[Position, Tile], current: Position, direction: Direction = Right, cost: Int = 0, visited: Set[Position] = Set.empty): Tree =
-    if (matrix(current) == End)
-      Target(cost)
-    else
-      val up: Tree =
-        if (!matrix.contains(current.up) || visited.contains(current.up) || matrix(current.up) == Wall)
-          Dead
-        else 
-          search(matrix, current.up, Up, cost + (if(direction.turn(Up)) then 1001 else 1), visited + current)
-
-      val down: Tree =
-        if (!matrix.contains(current.down) || visited.contains(current.down) || matrix(current.down) == Wall)
-          Dead
-        else 
-          search(matrix, current.down, Down, cost + (if(direction.turn(Down)) then 1001 else 1), visited + current)
-
-      val left: Tree =
-        if (!matrix.contains(current.left) || visited.contains(current.left) || matrix(current.left) == Wall)
-          Dead
-        else 
-          search(matrix, current.left, Left, cost + (if(direction.turn(Left)) then 1001 else 1), visited + current)
-
-      val right: Tree =
-        if (!matrix.contains(current.right) || visited.contains(current.right) || matrix(current.right) == Wall)
-          Dead
-        else 
-          search(matrix, current.right, Right, cost + (if(direction.turn(Right)) then 1001 else 1), visited + current)
-
-      Node(current, up, down, left, right)
+  def shortestPath(matrix: Map[Position, Tile]): Int =
+    val queue = PriorityQueue.empty[Node]
+    val start = matrix.find(_._2 == Start).get._1
+    queue.enqueue(Node(start, Right, 0))
+    val visited = HashSet.empty[(Position, Direction)]
+    var cost = Integer.MAX_VALUE
+    while (!queue.isEmpty)
+      val current = queue.dequeue()
+      if (matrix(current.position) == End && current.cost < cost)
+        cost = current.cost
+      else if (visited.add((current.position, current.direction)))
+        for (node <- current.forward(matrix)) queue.enqueue(node)
+        queue.enqueue(current.turnLeft)
+        queue.enqueue(current.turnRight)
+    cost
 
   def part1(input: String): Int = 
-    val matrix = parse(input)
-    val start = matrix.find(_._2 == Start).get._1
-    val tree = search(matrix, start)
-    tree.leaves.map(_.cost).min
+    shortestPath(parse(input))
 
   def part2(input: String): Int = ???
 

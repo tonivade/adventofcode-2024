@@ -3,6 +3,7 @@ package day16
 import scala.io.Source
 import scala.collection.mutable.PriorityQueue
 import scala.collection.mutable.HashSet
+import scala.util.chaining._
 
 // https://adventofcode.com/2024/day/16
 object Day16:
@@ -54,7 +55,7 @@ object Day16:
         case ('#', x) => Position(x, y) -> Wall
     .toMap
 
-  def shortestPath(matrix: Map[Position, Tile]): Int =
+  def search(matrix: Map[Position, Tile]): Int =
     val queue = PriorityQueue.empty[Node]
     val start = matrix.find(_._2 == Start).get._1
     queue.enqueue(Node(start, Right, 0))
@@ -68,8 +69,7 @@ object Day16:
         current.vertices(matrix).foreach(queue.enqueue(_))
     cost
 
-  def part1(input: String): Int = 
-    shortestPath(parse(input))
+  def part1(input: String): Int = input pipe parse pipe search
 
   def part2(input: String): Int = ???
 

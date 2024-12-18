@@ -10,6 +10,12 @@ class Day17Suite extends munit.FunSuite:
                 |
                 |Program: 0,1,5,4,3,0""".stripMargin
 
+  val input2 = """Register A: 2024
+                 |Register B: 0
+                 |Register C: 0
+                 |
+                 |Program: 0,3,5,4,3,0""".stripMargin
+
   test("Day17 part1 program examples"):
     assertEquals(exec(Computer(10, 0, 0))(Vector(0, 2)).a, 2)
     assertEquals(exec(Computer(10, 0, 0))(Vector(6, 2)).b, 2)
@@ -25,6 +31,6 @@ class Day17Suite extends munit.FunSuite:
   test("Day17 part1"):
     assertEquals(part1(input), "4,6,3,5,6,3,5,2,1,0")
 
-  test("Day17 part2".ignore):
-    assertEquals(part2(input), 1)
+  test("Day17 part2"):
+    assertEquals(part2(input2), 117440)
 

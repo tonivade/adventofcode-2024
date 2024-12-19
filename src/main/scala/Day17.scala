@@ -60,41 +60,21 @@ object Day17:
     val (computer, program) = parse(input)
     exec(program)(computer).output.mkString(",")
 
-  def toDecimal(input: Iterable[Int]): Long =
-    input.zipWithIndex.map:
-      case (x, i) => x.toLong * math.pow(8, i).toLong
-    .sum
-
   def solve2(program: Vector[Int]): Long = 
-    val validValuesOfA = HashSet(0L)
-    program.reverseIterator.foreach: digit =>
-      val nextValuesOfA = HashSet.empty[Long]
-      validValuesOfA.foreach: a =>
-        val shifted = a * 8L
-
-        (shifted to shifted + 8).foreach: candidate =>
-          val output = exec(program)(Computer(candidate, 0, 0)).output
-          if (output(0) == digit)
-            println(s"$candidate: $output")
-            nextValuesOfA.add(candidate)
-
-      validValuesOfA.clear()
-      validValuesOfA.addAll(nextValuesOfA)
-
-    validValuesOfA.filter: a => 
+    val result = program.reverseIterator.foldLeft(Set(0L)):
+      case (values, digit) =>
+        values.map(_ * 8L).flatMap: a =>
+          (a to a + 8).filter: candidate =>
+            val output = exec(program)(Computer(candidate, 0, 0)).output
+            output(0) == digit
+    
+    result.filter: a => 
       program.startsWith(exec(program)(Computer(a, 0, 0)).output)
     .min
 
   def part2(input: String): Long = 
     val (_, program) = parse(input)
-    val target = toDecimal(program)
-    val result = solve2(program)
-
-    val output = exec(program)(Computer(result, 0, 0)).output
-    println(program.mkString)
-    println(output.mkString)
-
-    result
+    solve2(program)
 
 @main def main: Unit =
   val input = Source.fromFile("input/day17.txt").getLines().mkString("\n")

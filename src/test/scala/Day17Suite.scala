@@ -31,10 +31,6 @@ class Day17Suite extends munit.FunSuite:
   test("Day17 part1"):
     assertEquals(part1(input), "4,6,3,5,6,3,5,2,1,0")
 
-  test("Day17 part2 to decimal number"):
-    assertEquals(toDecimal(List(5, 7, 3, 0)), 253L)
-    assertEquals(toDecimal(List(0, 3, 5, 4, 3, 0)), 14680L)
-
   test("Day17 part2"):
     assertEquals(part2(input2), 117440L)
 

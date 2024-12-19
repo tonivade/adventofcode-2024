@@ -61,14 +61,14 @@ object Day17:
     exec(program)(computer).output.mkString(",")
 
   def solve2(program: Vector[Int]): Long = 
-    val result = program.reverseIterator.foldLeft(Set(0L)):
+    val candidates = program.reverseIterator.foldLeft(Set(0L)):
       case (values, digit) =>
         values.map(_ * 8L).flatMap: a =>
           (a to a + 8).filter: candidate =>
             val output = exec(program)(Computer(candidate, 0, 0)).output
             output(0) == digit
     
-    result.filter: a => 
+    candidates.filter: a => 
       program.startsWith(exec(program)(Computer(a, 0, 0)).output)
     .min
 

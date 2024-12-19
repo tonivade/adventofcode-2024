@@ -31,11 +31,11 @@ object Day17:
         case 7 => Computer(a, b, dv(a, operand), pointer + 2, output)
     
   @tailrec
-  def exec(computer: Computer)(program: Vector[Int]): Computer =
+  def exec(program: Vector[Int])(computer: Computer): Computer =
     if (computer.pointer < program.size)
       val opcode = program(computer.pointer)
       val operand = program(computer.pointer + 1)
-      exec(computer.step(opcode, operand))(program)
+      exec(program)(computer.step(opcode, operand))
     else
       computer
 
@@ -56,19 +56,29 @@ object Day17:
 
   def part1(input: String): String = 
     val (computer, program) = parse(input)
-    exec(computer)(program).output.mkString(",")
+    exec(program)(computer).output.mkString(",")
 
-  def part2(input: String): Int = 
-    val (Computer(a, _, _, _, _), program) = parse(input)
+  def toNumber(input: Iterable[Int]): Long =
+    input.zipWithIndex.map:
+      case (x, i) => x.toLong * math.pow(8, i).toLong
+    .sum
 
-    val result = Iterator.iterate(a)(_ + 8).map:
-      a => 
-        val computer = Computer(a, 0, 0)
-        val result = exec(computer)(program).output
-        (a, result)
-    .find(_._2 == program).get
-    
-    result._1
+  def part2(input: String): Long = 
+    val (_, program) = parse(input)
+
+    println(program)
+
+    val seq = (0 until 1024)
+      .map(Computer(_, 0, 0))
+      .map(exec(program))
+      .map(_.output)
+      .map(_.head)
+      .toList
+
+    println(seq)
+
+    val target = toNumber(program)
+    target * 8L
 
 @main def main: Unit =
   val input = Source.fromFile("input/day17.txt").getLines().mkString("\n")

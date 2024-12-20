@@ -14,10 +14,8 @@ object Day19:
       towels
         .filter(chunk.startsWith)
         .map: partial => 
-          if (partial == chunk)
-            1
-          else 
-            memoized(chunk.drop(partial.size))
+          if (partial == chunk) 1
+          else memoized(chunk.drop(partial.size))
         .sum
     
     memoized(pattern)

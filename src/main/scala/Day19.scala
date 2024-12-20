@@ -6,30 +6,27 @@ import scala.collection.mutable.HashMap
 // https://adventofcode.com/2024/day/19
 object Day19:
 
-  def search(pattern: String, towels: List[String], cache: HashMap[String, Boolean]): Boolean = 
-  
-    def memoized(chunk: String): List[String] =
-      if cache.contains(chunk) then
-        if cache(chunk) then
-          pattern :: Nil
-        else 
-          Nil
+  def search(pattern: String, towels: List[String], cache: HashMap[String, Long]): Long = 
+
+    def memoized(chunk: String): Long =
+      if (cache.contains(chunk))
+        cache(chunk)
       else
         val result = loop(chunk)
-        cache.put(chunk, !result.isEmpty)
+        cache.put(chunk, result)
         result
-
-    def loop(chunk: String): List[String] =
-      val index = towels.indexWhere(_ == chunk)
-      if (index > -1)
-        List(pattern)
-      else
-        towels
-          .filter(_.size < chunk.size)
-          .filter(chunk.startsWith(_))
-          .flatMap(partial => memoized(chunk.drop(partial.size)))
-
-    !memoized(pattern).isEmpty
+  
+    def loop(chunk: String): Long =
+      towels
+        .filter(chunk.startsWith)
+        .map: partial => 
+          if (partial == chunk)
+            1
+          else 
+            memoized(chunk.drop(partial.size))
+        .sum
+    
+    memoized(pattern)
 
   def parse(input: String): (List[String], List[String]) =
     input.split("\n\n") match
@@ -38,10 +35,13 @@ object Day19:
 
   def part1(input: String): Int = 
     val (towels, patterns) = parse(input)
-    val cache = HashMap.empty[String, Boolean]
-    patterns.filter(search(_, towels, cache)).size
+    val cache = HashMap.empty[String, Long]
+    patterns.map(search(_, towels, cache)).count(_ > 0)
     
-  def part2(input: String): Int = ???
+  def part2(input: String): Long = 
+    val (towels, patterns) = parse(input)
+    val cache = HashMap.empty[String, Long]
+    patterns.map(search(_, towels, cache)).sum
 
 @main def main: Unit =
   val input = Source.fromFile("input/day19.txt").getLines().mkString("\n")

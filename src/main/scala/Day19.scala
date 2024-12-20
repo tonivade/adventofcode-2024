@@ -8,13 +8,7 @@ object Day19:
 
   def search(pattern: String, towels: List[String], cache: HashMap[String, Long]): Long = 
 
-    def memoized(chunk: String): Long =
-      if (cache.contains(chunk))
-        cache(chunk)
-      else
-        val result = loop(chunk)
-        cache.put(chunk, result)
-        result
+    def memoized(chunk: String): Long = cache.getOrElseUpdate(chunk, loop(chunk))
   
     def loop(chunk: String): Long =
       towels

@@ -31,11 +31,13 @@ object Day19:
 
     !memoized(pattern).isEmpty
 
-  def part1(input: String): Int = 
-    val (towels, patterns) = input.split("\n\n") match
+  def parse(input: String): (List[String], List[String]) =
+    input.split("\n\n") match
       case Array(top, bottom) => 
         (top.split(",").map(_.trim).toList, bottom.linesIterator.toList)
 
+  def part1(input: String): Int = 
+    val (towels, patterns) = parse(input)
     val cache = HashMap.empty[String, Boolean]
     patterns.filter(search(_, towels, cache)).size
     

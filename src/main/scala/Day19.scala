@@ -1,13 +1,24 @@
 package day19
 
 import scala.io.Source
-import scala.collection.parallel.CollectionConverters._
 import scala.collection.mutable.HashMap
 
 // https://adventofcode.com/2024/day/19
 object Day19:
 
-  def search(pattern: String, towels: List[String]): Boolean = 
+  def search(pattern: String, towels: List[String], cache: HashMap[String, Boolean]): Boolean = 
+  
+    def memoized(chunk: String): List[String] =
+      if cache.contains(chunk) then
+        if cache(chunk) then
+          pattern :: Nil
+        else 
+          Nil
+      else
+        val result = loop(chunk)
+        cache.put(chunk, !result.isEmpty)
+        result
+
     def loop(chunk: String): List[String] =
       val index = towels.indexWhere(_ == chunk)
       if (index > -1)
@@ -16,17 +27,17 @@ object Day19:
         towels
           .filter(_.size < chunk.size)
           .filter(chunk.startsWith(_))
-          .flatMap(partial => loop(chunk.drop(partial.size)))
-    val result = loop(pattern)
-    println(s"$pattern: ${result.isEmpty}")
-    !result.isEmpty
+          .flatMap(partial => memoized(chunk.drop(partial.size)))
+
+    !memoized(pattern).isEmpty
 
   def part1(input: String): Int = 
     val (towels, patterns) = input.split("\n\n") match
       case Array(top, bottom) => 
         (top.split(",").map(_.trim).toList, bottom.linesIterator.toList)
 
-    patterns.filter(search(_, towels)).size
+    val cache = HashMap.empty[String, Boolean]
+    patterns.filter(search(_, towels, cache)).size
     
   def part2(input: String): Int = ???
 

@@ -15,6 +15,7 @@ object Day18:
     def left = Position(x - 1, y)
     def right = Position(x + 1, y)
     def adjacent(bounds: Bounds) = List(up, down, left, right).filter(bounds.contains)
+    override def toString(): String = s"$x,$y"
  
   case class Bounds(width: Int, height: Int):
     def start = Position(0, 0)
@@ -39,7 +40,6 @@ object Day18:
     var cost = Int.MaxValue
     while (!queue.isEmpty)
       val current = queue.dequeue()
-      println(current)
       if (current.position == bounds.stop && cost > current.cost)
         cost = current.cost
       else if (visited.add(current.position))
@@ -52,9 +52,17 @@ object Day18:
     val bytes = parse(input)
     search(bytes.take(number).toSet, bounds)
 
+  def solve2(input: String, bounds: Bounds, number: Int): Position =
+    val bytes = parse(input)
+    (number until bytes.size)
+      .find: x => 
+        search(bytes.take(x).toSet, bounds) == Int.MaxValue
+      .map(x => bytes(x - 1))
+      .get
+
   def part1(input: String): Int = solve1(input, Bounds(71, 71), 1024)
 
-  def part2(input: String): Int = ???
+  def part2(input: String): String = solve2(input, Bounds(71, 71), 1024).toString
 
 @main def main: Unit =
   val input = Source.fromFile("input/day18.txt").getLines().mkString("\n")

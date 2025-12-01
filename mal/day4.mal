@@ -1,11 +1,10 @@
-(require str split)
-(require str split-lines)
+(import java.lang.String lines)
 (require str to-chars)
 
 (load-file "mal/aoc.mal")
 
 (def! parse (fn* [file] 
-    (let* (input (slurp file)) (map to-chars (split-lines input)))))
+    (let* (input (slurp file)) (map to-chars (lines input)))))
 
 (def! right (fn* [point] (list (incr (first point)) (second point))))
 (def! left (fn* [point] (list (decr (first point)) (second point))))

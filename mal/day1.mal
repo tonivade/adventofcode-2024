@@ -1,13 +1,13 @@
-(require str split)
-(require str split-lines)
-(require str to-number)
+(import java.lang.String split 1)
+(import java.lang.String lines)
+(import java.lang.Integer parseInt 1)
 
 (load-file "mal/aoc.mal")
 
 (def! split-pair (fn* [s] (split s "\\s+")))
 
 (def! parse (fn* [file] 
-    (let* (input (slurp file)) (map split-pair (split-lines input)))))
+    (let* (input (slurp file)) (map split-pair (lines input)))))
 
 (def! get-left (fn* [l] (first (first l))))
 
@@ -16,12 +16,12 @@
 (def! list-left (fn* [l] 
     (if (empty? l) 
         l 
-        (cons (to-number (get-left l)) (list-left (rest l))))))
+        (cons (parseInt (get-left l)) (list-left (rest l))))))
 
 (def! list-right (fn* [l] 
     (if (empty? l) 
         l 
-        (cons (to-number (get-right l)) (list-right (rest l))))))
+        (cons (parseInt (get-right l)) (list-right (rest l))))))
 
 (def! diff (fn* [l] (- (first l) (second l))))
 
@@ -32,8 +32,8 @@
             (+ 1 (count-in-list (rest l) item)) 
             (count-in-list (rest l) item)))))
 
-(def! input (parse "input/day1-test.txt"))
-;(def! input (parse "input/day1.txt"))
+;(def! input (parse "input/day1-test.txt"))
+(def! input (parse "input/day1.txt"))
 
 ; day1 part1
 (println (reduce 0 + (map abs (map diff 

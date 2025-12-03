@@ -1,3 +1,5 @@
+; https://adventofcode.com/2024/day/3
+
 (require str find-matches)
 (import java.lang.Integer parseInt 1)
 

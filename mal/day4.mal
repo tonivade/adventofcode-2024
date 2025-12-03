@@ -1,10 +1,9 @@
 (import java.lang.String lines)
-(require str to-chars)
 
 (load-file "mal/aoc.mal")
 
 (def! parse (fn* [file] 
-    (let* (input (slurp file)) (map to-chars (lines input)))))
+    (let* (input (slurp file)) (map seq (lines input)))))
 
 (def! right (fn* [point] (list (incr (first point)) (second point))))
 (def! left (fn* [point] (list (decr (first point)) (second point))))
@@ -47,8 +46,8 @@
                 (exists? (fn* [s] (= s (m3 a))) ss)
                 (exists? (fn* [s] (= s (m4 a))) ss))) as))))
 
-(def! input (parse "input/day4-test.txt"))
-;(def! input (parse "input/day4.txt"))
+;(def! input (parse "input/day4-test.txt"))
+(def! input (parse "input/day4.txt"))
 
 ;day4 part1
 (println (count (concat 

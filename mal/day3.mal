@@ -1,6 +1,6 @@
 ; https://adventofcode.com/2024/day/3
 
-(require str find-matches)
+(import mal.lib.Strings findMatches 2)
 (import java.lang.Integer parseInt 1)
 
 (load-file "mal/aoc.mal")
@@ -11,7 +11,7 @@
 (def! mul (fn* [match] (* (parseInt (nth match 1)) (parseInt (nth match 2)))))
 
 ;day3 part1
-(println (reduce 0 + (map mul (find-matches input "mul\\((\\d+),(\\d+)\\)"))))
+(println (reduce 0 + (map mul (findMatches input "mul\\((\\d+),(\\d+)\\)"))))
 
 ;day3 part2
 (println (second (fold (list true 0)
@@ -20,4 +20,4 @@
         (= (first match) "don't()") (list false (second state))
         (first state) (list true (+ (second state) (mul match)))
         true state))
-    (find-matches input "do(?:n't)?\\(\\)|mul\\((\\d+),(\\d+)\\)"))))
+    (findMatches input "do(?:n't)?\\(\\)|mul\\((\\d+),(\\d+)\\)"))))
